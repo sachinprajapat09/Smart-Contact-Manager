@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Login - Smart Contact Manager</title>
+    
+    <!-- Tailwind CSS CDN for utility-first responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome for professional vector icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Subtle float animations for background blobs */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .floating-blob {
+            animation: float 6s ease-in-out infinite;
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen selection:bg-indigo-500 selection:text-white">
+
+    <!-- NAVIGATION BAR -->
+    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Branding Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a th:href="@{/}" class="text-2xl font-extrabold text-indigo-600 flex items-center gap-2.5 tracking-tight hover:opacity-90 transition">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                            <i class="fa-solid fa-address-book text-lg"></i>
+                        </div>
+                        <span>Smart<span class="text-slate-900">Contact</span></span>
+                    </a>
+                </div>
+                
+                <!-- Navigation Links (Desktop) -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a th:href="@{/}" class="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition duration-150">Home</a>
+                    <a th:href="@{/about}" class="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition duration-150">About</a>
+                </div>
+
+                <!-- Auth Action Buttons (Desktop) -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a th:href="@{/signup}" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold text-sm px-5 py-2.5 rounded-xl transition duration-150">Create Account</a>
+                    <a th:href="@{/login}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-indigo-100 hover:shadow-indigo-200 hover:-translate-y-0.5 transition duration-150">Sign In</a>
+                </div>
+
+                <!-- Mobile Menu Toggler Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-indigo-600 focus:outline-none p-2 rounded-lg hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Navigation Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 px-4 pt-2 pb-4 space-y-2 shadow-inner">
+            <a th:href="@{/}" class="block text-slate-600 hover:bg-slate-50 hover:text-indigo-600 px-3 py-2.5 rounded-xl font-semibold text-sm transition">Home</a>
+            <a th:href="@{/about}" class="block text-slate-600 hover:bg-slate-50 hover:text-indigo-600 px-3 py-2.5 rounded-xl font-semibold text-sm transition">About</a>
+            <div class="pt-2 border-t border-slate-100 flex flex-col gap-2">
+                <a th:href="@{/signup}" class="text-center text-slate-700 hover:bg-slate-50 font-bold py-2.5 rounded-xl text-sm transition">Create Account</a>
+                <a th:href="@{/login}" class="text-center bg-indigo-600 text-white font-bold py-2.5 rounded-xl text-sm shadow-md transition">Sign In</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- LOGIN MAIN SECTION -->
+    <main class="flex-grow flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-50 via-white to-sky-50 relative overflow-hidden">
+        
+        <!-- Decorative glowing elements behind container -->
+        <div class="absolute top-1/4 left-1/10 w-96 h-96 bg-indigo-200/30 rounded-full mix-blend-multiply filter blur-3xl floating-blob hidden lg:block"></div>
+        <div class="absolute bottom-1/4 right-1/10 w-96 h-96 bg-sky-200/30 rounded-full mix-blend-multiply filter blur-3xl floating-blob hidden lg:block" style="animation-delay: 3s;"></div>
+
+        <div class="max-w-md w-full space-y-6 bg-white p-8 sm:p-10 rounded-3xl shadow-xl shadow-slate-100/80 border border-slate-100 relative z-10">
+            
+            <!-- Branding Header -->
+            <div class="text-center">
+                <div class="mx-auto h-14 w-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-2xl mb-4 shadow-inner">
+                    <i class="fa-solid fa-lock-open"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Welcome Back</h2>
+                <p class="mt-2 text-sm text-slate-500">
+                    Keep your contacts organized. Please sign in.
+                </p>
+            </div>
+
+            <!-- SPRING SECURITY AUTHENTICATION ERROR BANNER -->
+            <!-- If Spring Security returns ?error, this gets rendered dynamically -->
+            <div th:if="${param.error}" class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3.5 rounded-xl flex items-start gap-3 text-sm font-medium animate-fade-in">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 mt-0.5 text-base"></i>
+                <div>
+                    <h5 class="font-bold">Authentication Failed</h5>
+                    <p class="text-xs text-rose-600 mt-0.5">Invalid username (email) or password. Please try again.</p>
+                </div>
+            </div>
+
+            <!-- SPRING SECURITY LOGOUT SUCCESS BANNER -->
+            <!-- If Spring Security logout redirect returns ?logout, this gets rendered dynamically -->
+            <div th:if="${param.logout}" class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3.5 rounded-xl flex items-start gap-3 text-sm font-medium animate-fade-in">
+                <i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 text-base"></i>
+                <div>
+                    <h5 class="font-bold">Logged Out Successfully</h5>
+                    <p class="text-xs text-emerald-600 mt-0.5">You have been securely signed out of your session.</p>
+                </div>
+            </div>
+
+            <!-- SPRING SECURITY COMPATIBLE LOGIN FORM -->
+            <!-- Custom action goes directly to standard filter: th:action="@{/login}" -->
+            <form th:action="@{/login}" method="post" class="space-y-5" onsubmit="showSubmitLoading()">
+                
+                <!-- Email Address Input (Spring Security processes parameter 'username') -->
+                <div class="space-y-1.5">
+                    <label for="username" class="block text-sm font-bold text-slate-700">Email Address</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                            <i class="fa-solid fa-envelope text-sm"></i>
+                        </div>
+                        <input id="username" name="username" type="email" required
+                            class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 placeholder-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium shadow-sm hover:border-slate-300" 
+                            placeholder="your-email@example.com">
+                    </div>
+                </div>
+
+                <!-- Password Input Field with Interactive Toggle -->
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center">
+                        <label for="password" class="block text-sm font-bold text-slate-700">Password</label>
+                        <a th:href="@{/forgot-password}" class="text-xs font-semibold text-indigo-600 hover:text-indigo-500 transition">Forgot password?</a>
+                    </div>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                            <i class="fa-solid fa-lock text-sm"></i>
+                        </div>
+                        <input id="password" name="password" type="password" required
+                            class="appearance-none rounded-xl relative block w-full pl-11 pr-11 py-3 border border-slate-200 placeholder-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium shadow-sm hover:border-slate-300" 
+                            placeholder="••••••••">
+                        <!-- Password Visibility Action Toggle -->
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-indigo-600 transition">
+                            <i id="eye-icon" class="fa-solid fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember Me & Checkbox Actions -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox"
+                            class="h-4.5 w-4.5 text-indigo-600 focus:ring-indigo-500/30 border-slate-200 rounded-lg cursor-pointer transition">
+                        <label for="remember-me" class="ml-2.5 block text-sm font-medium text-slate-500 cursor-pointer select-none">
+                            Remember me
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Login Submission Button -->
+                <div>
+                    <button type="submit" id="submit-btn" class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-lg shadow-indigo-100 hover:shadow-indigo-200 hover:-translate-y-0.5 transition duration-150">
+                        <span id="btn-text" class="flex items-center gap-2">
+                            Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        </span>
+                        <!-- Loading spinner on form post -->
+                        <span id="btn-spinner" class="hidden">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="pt-2 text-center">
+                <p class="text-sm text-slate-500">
+                    Don't have an account yet? 
+                    <a th:href="@{/signup}" class="font-bold text-indigo-600 hover:text-indigo-500 underline underline-offset-4 decoration-2 transition">Create one here</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 py-12 mt-auto border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2.5 text-white font-extrabold text-xl tracking-tight">
+                <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-sm">
+                    <i class="fa-solid fa-address-book"></i>
+                </div>
+                <span>Smart<span class="text-slate-400">Contact</span></span>
+            </div>
+            <p class="text-sm text-center md:text-left">
+                &copy; 2026 Smart Contact Manager. All rights reserved.
+            </p>
+            <div class="flex space-x-6 text-lg">
+                <a href="#" class="hover:text-white transition-colors duration-150"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" class="hover:text-white transition-colors duration-150"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="hover:text-white transition-colors duration-150"><i class="fa-brands fa-github"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE SCRIPTS -->
+    <script>
+        // Mobile Drawer Menu toggle interaction
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Toggle Password visibility logic
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordField.type = "password";
+                eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        // Show inline submit loading spinner
+        function showSubmitLoading() {
+            const submitBtn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnSpinner = document.getElementById('btn-spinner');
+
+            submitBtn.disabled = true;
+            btnText.classList.add('hidden');
+            btnSpinner.classList.remove('hidden');
+            
+            return true;
+        }
+    </script>
+</body>
+</html>

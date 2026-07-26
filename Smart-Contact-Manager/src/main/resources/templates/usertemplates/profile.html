@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">User Profile - Smart Contact Manager</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- MAIN WRAPPER -->
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- 1. SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-400 flex flex-col justify-between border-r border-slate-800 transition-transform -translate-x-full md:translate-x-0 md:relative md:flex-shrink-0">
+            
+            <!-- Branding -->
+            <div>
+                <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
+                    <a th:href="@{/}" class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-md">
+                            <i class="fa-solid fa-address-book text-sm"></i>
+                        </div>
+                        <span>Smart<span class="text-indigo-400">Contact</span></span>
+                    </a>
+                </div>
+
+                <!-- Navigation Workspace -->
+                <nav class="p-4 space-y-1.5">
+                    <span class="px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Workspace</span>
+                    
+                    <a th:href="@{/user/index}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-chart-line text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <a th:href="@{/user/add-contact}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-user-plus text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Add Contact</span>
+                    </a>
+                    
+                    <a th:href="@{/user/show-contacts/0}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-users text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>View Contacts</span>
+                    </a>
+
+                    <span class="px-3 pt-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Account Settings</span>
+
+                    <a th:href="@{/user/profile}" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-600 text-white text-sm font-semibold shadow-md transition-all">
+                        <i class="fa-solid fa-user-gear text-base"></i>
+                        <span>My Profile</span>
+                    </a>
+                    
+                    <a th:href="@{/user/settings}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-sliders text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Profile Footer in Sidebar -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950/40">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <img th:if="${user != null}" 
+                             th:src="${user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             class="rounded-xl bg-indigo-100 border border-slate-700" 
+                             style="width: 40px !important; height: 40px !important; object-fit: cover !important;"
+                             onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             alt="Profile">
+                        <div class="text-left overflow-hidden">
+                            <h5 class="text-sm font-bold text-white truncate" th:text="${user != null ? user.name : 'Guest User'}">John Doe</h5>
+                            <p class="text-xs text-slate-500 truncate" th:text="${user != null ? user.email : 'user@example.com'}">user@example.com</p>
+                        </div>
+                    </div>
+                    <a th:href="@{/logout}" class="p-2 text-slate-500 hover:text-rose-400 rounded-lg transition hover:bg-slate-800" title="Sign Out">
+                        <i class="fa-solid fa-right-from-bracket text-base"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 2. MAIN WORKSPACE -->
+        <div class="flex-grow flex flex-col overflow-y-auto no-scrollbar relative">
+            
+            <!-- HEADER BAR -->
+            <header class="h-16 bg-white border-b border-slate-100 px-4 sm:px-6 flex justify-between items-center sticky top-0 z-30">
+                <div class="flex items-center gap-3">
+                    <button id="mobile-sidebar-toggle" class="md:hidden text-slate-600 hover:bg-slate-100 p-2 rounded-xl transition">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-base font-bold text-slate-800">User Profile</h1>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <button id="profile-dropdown-btn" class="flex items-center gap-2 text-slate-700 focus:outline-none hover:opacity-90 transition">
+                            <img th:if="${user != null}" 
+                                 th:src="${user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 class="rounded-lg bg-slate-200" 
+                                 style="width: 32px !important; height: 32px !important; object-fit: cover !important;"
+                                 onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 alt="Avatar">
+                            <span class="text-xs font-bold hidden md:inline" th:text="${user != null ? user.name : 'User'}">User</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 hidden md:inline"></i>
+                        </button>
+                        
+                        <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50">
+                            <a th:href="@{/user/profile}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-user-circle w-4"></i> Profile</a>
+                            <a th:href="@{/user/settings}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-cog w-4"></i> Settings</a>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a th:href="@{/logout}" class="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50"><i class="fa-solid fa-sign-out-alt w-4"></i> Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- PROFILE MAIN CONTENT -->
+            <main class="flex-grow p-4 sm:p-6 lg:p-8 space-y-6">
+                
+                <div class="max-w-4xl mx-auto space-y-6">
+                    
+                    <!-- Top Profile Banner Card -->
+                    <div class="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
+                        
+                        <!-- Header Background Graphic -->
+                        <div class="h-32 bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 relative">
+                            <div class="absolute inset-0 bg-white/5 backdrop-blur-3xl"></div>
+                            <div class="absolute top-4 right-4 bg-white/10 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-md">
+                                <span th:text="${user != null ? user.role : 'ROLE_USER'}">ROLE_USER</span>
+                            </div>
+                        </div>
+
+                        <!-- Profile Info Header Area -->
+                        <div class="px-6 pb-6 relative">
+                            <div class="flex flex-col sm:flex-row items-center sm:items-end justify-between -mt-16 sm:-mt-12 gap-4">
+                                
+                                <!-- User Avatar & Name -->
+                                <div class="flex flex-col sm:flex-row items-center sm:items-end gap-4 text-center sm:text-left">
+                                    <div class="relative">
+                                        <img th:src="${user != null && user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/150x150/6366f1/ffffff?text=U'" 
+                                             class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover border-4 border-white shadow-xl bg-slate-100" 
+                                             onerror="this.src='https://placehold.co/150x150/6366f1/ffffff?text=U'" 
+                                             alt="User Avatar">
+                                        <span class="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 border-2 border-white rounded-full" title="Active Account"></span>
+                                    </div>
+                                    <div class="mb-1">
+                                        <h2 class="text-2xl font-extrabold text-slate-900" th:text="${user != null ? user.name : 'User Name'}">John Doe</h2>
+                                        <p class="text-xs font-medium text-slate-500 flex items-center justify-center sm:justify-start gap-1.5 mt-1">
+                                            <i class="fa-solid fa-envelope text-indigo-500"></i>
+                                            <span th:text="${user != null ? user.email : 'user@example.com'}">user@example.com</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons (Updated to Edit Profile) -->
+                                <div class="flex items-center gap-2">
+                                    <a th:href="@{/user/edit-profile}" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 flex items-center gap-2">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Details Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <!-- Account Summary Card -->
+                        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl space-y-4">
+                            <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-info text-indigo-600"></i> Account Summary
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <span class="text-[11px] font-bold uppercase text-slate-400 block">User ID</span>
+                                    <p class="text-sm font-semibold text-slate-800" th:text="${user != null ? '#USER-' + user.id : '#USER-1'}">#USER-1</p>
+                                </div>
+                                <div>
+                                    <!-- <span class="text-[11px] font-bold uppercase text-slate-400 block">Phone Number</span>
+                                    <p class="text-sm font-semibold text-slate-800" th:text="${user != null && user.phone != null && !user.phone.isEmpty()} ? ${user.phone} : 'Not Provided'">Not Provided</p>
+                                    -->
+                                </div>
+                                <div>
+                                    <span class="text-[11px] font-bold uppercase text-slate-400 block">Account Status</span>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 mt-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] font-bold uppercase text-slate-400 block">Role</span>
+                                    <p class="text-sm font-semibold text-slate-800" th:text="${user != null ? user.role : 'ROLE_USER'}">ROLE_USER</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bio / About Section -->
+                        <div class="md:col-span-2 bg-white p-6 rounded-3xl border border-slate-100 shadow-xl space-y-4">
+                            <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-address-card text-indigo-600"></i> About Me
+                            </h3>
+                            
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <p class="text-sm text-slate-600 leading-relaxed italic" 
+                                   th:text="${user != null && user.about != null && !user.about.isEmpty()} ? ${user.about} : 'No description added for this user profile.'">
+                                    No description added for this user profile.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+            <!-- FOOTER -->
+            <footer class="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400 mt-auto">
+                <p>&copy; 2026 Smart Contact Manager. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Profile dropdown menu toggling
+        const dropdownBtn = document.getElementById('profile-dropdown-btn');
+        const dropdownMenu = document.getElementById('profile-dropdown');
+
+        if(dropdownBtn && dropdownMenu) {
+            dropdownBtn.addEventListener('click', (event) => {
+                dropdownMenu.classList.toggle('hidden');
+                event.stopPropagation();
+            });
+
+            window.addEventListener('click', () => {
+                if (!dropdownMenu.classList.contains('hidden')) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Mobile drawer toggling
+        const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if(mobileToggleBtn && sidebar) {
+            mobileToggleBtn.addEventListener('click', (event) => {
+                sidebar.classList.toggle('-translate-x-full');
+                event.stopPropagation();
+            });
+
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth < 768) {
+                    if (!sidebar.contains(e.target) && e.target !== mobileToggleBtn) {
+                        sidebar.classList.add('-translate-x-full');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

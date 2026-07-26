@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Update Contact - Smart Contact Manager</title>
+    
+    <!-- Tailwind CSS CDN for modern grid and utility styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Vector Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar hiding */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- MAIN CONTAINER WRAPPER: Sidebar + Dashboard Panel -->
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- 1. SIDE NAVIGATION BAR -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-400 flex flex-col justify-between border-r border-slate-800 transition-transform -translate-x-full md:translate-x-0 md:relative md:flex-shrink-0">
+            
+            <!-- Branding -->
+            <div>
+                <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
+                    <a th:href="@{/}" class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-md">
+                            <i class="fa-solid fa-address-book text-sm"></i>
+                        </div>
+                        <span>Smart<span class="text-indigo-400">Contact</span></span>
+                    </a>
+                </div>
+
+                <!-- Navigation Workspace -->
+                <nav class="p-4 space-y-1.5">
+                    <span class="px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Workspace</span>
+                    
+                    <a th:href="@{/user/index}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-chart-line text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <a th:href="@{/user/add-contact}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-user-plus text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Add Contact</span>
+                    </a>
+                    
+                    <a th:href="@{/user/show-contacts/0}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-users text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>View Contacts</span>
+                    </a>
+
+                    <span class="px-3 pt-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Account settings</span>
+
+                    <a th:href="@{/user/profile}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-user-gear text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>My Profile</span>
+                    </a>
+                    
+                    <a th:href="@{/user/settings}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-sliders text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Profile Footer -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950/40">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <img th:if="${user != null}" 
+                            th:src="${user.imgUrl != null && !user.imgUrl.isEmpty()}
+        ? @{'/images/' + ${user.imgUrl}}
+        : 'https://ui-avatars.com/api/?name=' + ${user.name} + '&background=4f46e5&color=ffffff&size=100'"
+                             class="rounded-xl bg-indigo-100 border border-slate-700" 
+                             style="width: 40px !important; height: 40px !important; object-fit: cover !important;"
+                             onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             alt="Profile">
+                        <div class="text-left overflow-hidden">
+                            <h5 class="text-sm font-bold text-white truncate" th:text="${user != null ? user.name : 'Guest User'}">John Doe</h5>
+                            <p class="text-xs text-slate-500 truncate" th:text="${user != null ? user.email : 'user@example.com'}">user@example.com</p>
+                        </div>
+                    </div>
+                    <a th:href="@{/logout}" class="p-2 text-slate-500 hover:text-rose-400 rounded-lg transition hover:bg-slate-800" title="Sign Out">
+                        <i class="fa-solid fa-right-from-bracket text-base"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 2. MAIN WORKING DISPLAY AREA -->
+        <div class="flex-grow flex flex-col overflow-y-auto no-scrollbar relative">
+            
+            <!-- HEADER BAR PANEL -->
+            <header class="h-16 bg-white border-b border-slate-100 px-4 sm:px-6 flex justify-between items-center sticky top-0 z-30">
+                <div class="flex items-center gap-3">
+                    <button id="mobile-sidebar-toggle" class="md:hidden text-slate-600 hover:bg-slate-100 p-2 rounded-xl transition">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <a th:href="@{/user/show-contacts/0}" class="text-xs font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100 transition">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Contacts
+                    </a>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <button id="profile-dropdown-btn" class="flex items-center gap-2 text-slate-700 focus:outline-none hover:opacity-90 transition">
+                            <img th:if="${user != null}" 
+                                 th:src="${user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 class="rounded-lg bg-slate-200" 
+                                 style="width: 32px !important; height: 32px !important; object-fit: cover !important;"
+                                 onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 alt="Avatar">
+                            <span class="text-xs font-bold hidden md:inline" th:text="${user != null ? user.name : 'User'}">User</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 hidden md:inline"></i>
+                        </button>
+                        
+                        <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50">
+                            <a th:href="@{/user/profile}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-user-circle w-4"></i> Profile</a>
+                            <a th:href="@{/user/settings}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-cog w-4"></i> Settings</a>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a th:href="@{/logout}" class="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50"><i class="fa-solid fa-sign-out-alt w-4"></i> Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- MAIN WORKING AREA -->
+            <main class="flex-grow p-4 sm:p-6 lg:p-8 space-y-6">
+                
+                <!-- Toast status message -->
+                <div id="session-toast" th:if="${session.message}" 
+                     th:classappend="${session.message.type == 'success'} ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'"
+                     class="max-w-3xl mx-auto border px-4 py-3.5 rounded-2xl flex items-start gap-3 text-sm font-medium transition duration-300">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-lg"
+                         th:classappend="${session.message.type == 'success'} ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'">
+                        <i th:class="${session.message.type == 'success'} ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation'"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm" th:text="${session.message.type == 'success' ? 'Successful' : 'Alert'}">Status</h4>
+                        <p class="text-xs mt-0.5" th:text="${session.message.content}">Notification content</p>
+                    </div>
+                    <button onclick="dismissSessionToast()" class="ml-auto text-slate-400 hover:text-slate-600 mt-0.5">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <th:block th:text="${#session.removeAttribute('message')}"></th:block>
+                </div>
+
+                <!-- UPDATE FORM CARD CONTAINER -->
+                <div class="max-w-3xl mx-auto bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
+                    
+                    <!-- Card Top Header -->
+                    <div class="p-6 sm:p-8 bg-gradient-to-r from-slate-900 to-emerald-950 text-white flex justify-between items-center relative">
+                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-emerald-500/30">Edit Mode</span>
+                                <span class="text-xs font-semibold text-slate-400" th:text="${'ID: #SCM-' + contact.cid}">#SCM-101</span>
+                            </div>
+                            <h2 class="text-2xl font-extrabold tracking-tight">Update Connection Details</h2>
+                            <p class="text-emerald-200/80 text-xs sm:text-sm mt-1">Modify the contact details and save changes to your database.</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/20 text-emerald-400 flex items-center justify-center text-xl shadow-inner relative z-10">
+                            <i class="fa-solid fa-user-pen"></i>
+                        </div>
+                    </div>
+
+                    <!-- FORM CONTAINER -->
+                    <form th:action="@{/user/process-update}" th:object="${contact}" method="post" enctype="multipart/form-data" class="p-6 sm:p-8 space-y-6">
+                        
+                        <!-- HIDDEN CONTACT CID FOR BACKEND IDENTIFICATION -->
+                        <input type="hidden" th:field="*{cid}" />
+
+                        <!-- Row 1: First Name & Second Name -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            
+                            <!-- Full Name -->
+                            <div class="space-y-1.5">
+                                <label for="name" class="block text-sm font-bold text-slate-700">Full Name <span class="text-rose-500">*</span></label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-600 transition-colors">
+                                        <i class="fa-solid fa-user text-sm"></i>
+                                    </div>
+                                    <input id="name" th:field="*{name}" type="text" required
+                                           class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
+                                </div>
+                            </div>
+
+                            <!-- Nickname / Second Name -->
+                            <div class="space-y-1.5">
+                                <label for="secondName" class="block text-sm font-bold text-slate-700">Nickname / Alias</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-600 transition-colors">
+                                        <i class="fa-solid fa-user-tag text-sm"></i>
+                                    </div>
+                                    <input id="secondName" th:field="*{secondName}" type="text"
+                                           class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Email & Work Designation -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            
+                            <!-- Email Address -->
+                            <div class="space-y-1.5">
+                                <label for="email" class="block text-sm font-bold text-slate-700">Email Address <span class="text-rose-500">*</span></label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-600 transition-colors">
+                                        <i class="fa-solid fa-envelope text-sm"></i>
+                                    </div>
+                                    <input id="email" th:field="*{email}" type="email" required
+                                           class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
+                                </div>
+                            </div>
+
+                            <!-- Work Designation -->
+                            <div class="space-y-1.5">
+                                <label for="work" class="block text-sm font-bold text-slate-700">Work / Occupation</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-600 transition-colors">
+                                        <i class="fa-solid fa-briefcase text-sm"></i>
+                                    </div>
+                                    <input id="work" th:field="*{work}" type="text"
+                                           class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="space-y-1.5">
+                            <label for="phone" class="block text-sm font-bold text-slate-700">
+                                Phone Number <span class="text-rose-500">*</span>
+                            </label>
+
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-600 transition-colors">
+                                    <i class="fa-solid fa-phone text-sm"></i>
+                                </div>
+
+                                <input id="phone" type="text" th:field="*{phone}" required
+                                    class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Contact Description / Notes -->
+                        <div class="space-y-1.5">
+                            <label for="contactAbout" class="block text-sm font-bold text-slate-700">Description / Notes</label>
+                            <div class="relative group">
+                                <div class="absolute top-3 left-3.5 pointer-events-none text-slate-400 group-focus-within:text-emerald-600 transition-colors">
+                                    <i class="fa-solid fa-align-left text-sm"></i>
+                                </div>
+                                <textarea id="contactAbout" th:field="*{contactAbout}" rows="4"
+                                          class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-sm font-medium shadow-sm hover:border-slate-300 resize-none"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Row 4: Image Update & Current Display Panel -->
+                        <div class="space-y-2 bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Profile Image</label>
+                            
+                            <div class="flex flex-col sm:flex-row items-center gap-5">
+                                <!-- Existing / Live Preview Avatar -->
+                               <div class="relative flex-shrink-0">
+
+    <img id="image-preview"
+         th:if="${contact.img != null && !contact.img.isEmpty() && contact.img != 'default.png'}"
+         th:src="@{'/images/' + ${contact.img}}"
+         class="w-20 h-20 rounded-2xl object-cover border-2 border-white shadow-md bg-white"
+         alt="Profile Preview"/>
+
+    <div th:unless="${contact.img != null && !contact.img.isEmpty() && contact.img != 'default.png'}"
+         class="w-20 h-20 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-4xl font-bold border-2 border-white shadow-md">
+
+        <span th:text="${#strings.substring(contact.name,0,1)}">C</span>
+
+    </div>
+
+    <span class="absolute -bottom-1 -right-1 bg-emerald-500 text-white text-[10px] p-1 rounded-full shadow-md">
+        <i class="fa-solid fa-check"></i>
+    </span>
+
+</div>
+
+                                <!-- File Select Box -->
+                                <div class="w-full space-y-1">
+                                    <input type="file" name="profileImage" id="profileImage" onchange="previewSelectedImage(event)" accept="image/*"
+                                           class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition cursor-pointer border border-slate-200 rounded-xl bg-white p-1">
+                                    <p class="text-[11px] text-slate-400">Leave empty to keep current image. Select a file to replace it (JPG, PNG, WEBP).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+                            <a th:href="@{/user/show-contacts/0}" class="px-5 py-3 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-xs transition">
+                                Cancel
+                            </a>
+                            <button type="submit" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-200 hover:-translate-y-0.5 transition duration-150 flex items-center gap-2">
+                                <i class="fa-solid fa-floppy-disk"></i> Update Connection
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </main>
+
+            <!-- FOOTER -->
+            <footer class="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400 mt-auto">
+                <p>&copy; 2026 Smart Contact Manager. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE SCRIPTS -->
+    <script>
+        // Profile dropdown menu toggling
+        const dropdownBtn = document.getElementById('profile-dropdown-btn');
+        const dropdownMenu = document.getElementById('profile-dropdown');
+
+        if(dropdownBtn && dropdownMenu) {
+            dropdownBtn.addEventListener('click', (event) => {
+                dropdownMenu.classList.toggle('hidden');
+                event.stopPropagation();
+            });
+
+            window.addEventListener('click', () => {
+                if (!dropdownMenu.classList.contains('hidden')) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Mobile drawer toggling
+        const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if(mobileToggleBtn && sidebar) {
+            mobileToggleBtn.addEventListener('click', (event) => {
+                sidebar.classList.toggle('-translate-x-full');
+                event.stopPropagation();
+            });
+
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth < 768) {
+                    if (!sidebar.contains(e.target) && e.target !== mobileToggleBtn) {
+                        sidebar.classList.add('-translate-x-full');
+                    }
+                }
+            });
+        }
+
+        // Live image preview function when user selects new file
+        function previewSelectedImage(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById('image-preview');
+                    if (preview) {
+                        preview.src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Session toast alert dismissal
+        function dismissSessionToast() {
+            const toast = document.getElementById('session-toast');
+            if (toast) {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    toast.remove();
+                }, 400);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const toast = document.getElementById('session-toast');
+            if (toast) {
+                setTimeout(dismissSessionToast, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

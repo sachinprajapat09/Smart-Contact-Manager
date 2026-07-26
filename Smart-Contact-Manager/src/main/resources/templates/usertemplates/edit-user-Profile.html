@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Edit Profile - Smart Contact Manager</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- MAIN WRAPPER -->
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- 1. SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-400 flex flex-col justify-between border-r border-slate-800 transition-transform -translate-x-full md:translate-x-0 md:relative md:flex-shrink-0">
+            <div>
+                <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
+                    <a th:href="@{/}" class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-md">
+                            <i class="fa-solid fa-address-book text-sm"></i>
+                        </div>
+                        <span>Smart<span class="text-indigo-400">Contact</span></span>
+                    </a>
+                </div>
+
+                <nav class="p-4 space-y-1.5">
+                    <span class="px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Workspace</span>
+                    
+                    <a th:href="@{/user/index}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-chart-line text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <a th:href="@{/user/add-contact}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-user-plus text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Add Contact</span>
+                    </a>
+                    
+                    <a th:href="@{/user/show-contacts/0}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-users text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>View Contacts</span>
+                    </a>
+
+                    <span class="px-3 pt-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Account Settings</span>
+
+                    <a th:href="@{/user/profile}" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-600 text-white text-sm font-semibold shadow-md transition-all">
+                        <i class="fa-solid fa-user-gear text-base"></i>
+                        <span>My Profile</span>
+                    </a>
+                    
+                    <a th:href="@{/user/settings}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-sliders text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Profile Footer -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950/40">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <img th:if="${user != null}" 
+                             th:src="${user.imgUrl!= null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             class="rounded-xl bg-indigo-100 border border-slate-700" 
+                             style="width: 40px !important; height: 40px !important; object-fit: cover !important;"
+                             onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             alt="Profile">
+                        <div class="text-left overflow-hidden">
+                            <h5 class="text-sm font-bold text-white truncate" th:text="${user != null ? user.name : 'Guest User'}">John Doe</h5>
+                            <p class="text-xs text-slate-500 truncate" th:text="${user != null ? user.email : 'user@example.com'}">user@example.com</p>
+                        </div>
+                    </div>
+                    <a th:href="@{/logout}" class="p-2 text-slate-500 hover:text-rose-400 rounded-lg transition hover:bg-slate-800" title="Sign Out">
+                        <i class="fa-solid fa-right-from-bracket text-base"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 2. MAIN WORKSPACE -->
+        <div class="flex-grow flex flex-col overflow-y-auto no-scrollbar relative">
+            
+            <!-- HEADER BAR -->
+            <header class="h-16 bg-white border-b border-slate-100 px-4 sm:px-6 flex justify-between items-center sticky top-0 z-30">
+                <div class="flex items-center gap-3">
+                    <button id="mobile-sidebar-toggle" class="md:hidden text-slate-600 hover:bg-slate-100 p-2 rounded-xl transition">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-base font-bold text-slate-800">Edit Profile</h1>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <button id="profile-dropdown-btn" class="flex items-center gap-2 text-slate-700 focus:outline-none hover:opacity-90 transition">
+                            <img th:if="${user != null}" 
+                                 th:src="${user.imgUrl!= null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 class="rounded-lg bg-slate-200" 
+                                 style="width: 32px !important; height: 32px !important; object-fit: cover !important;"
+                                 onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 alt="Avatar">
+                            <span class="text-xs font-bold hidden md:inline" th:text="${user != null ? user.name : 'User'}">User</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 hidden md:inline"></i>
+                        </button>
+                        
+                        <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50">
+                            <a th:href="@{/user/profile}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-user-circle w-4"></i> Profile</a>
+                            <a th:href="@{/user/settings}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-cog w-4"></i> Settings</a>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a th:href="@{/logout}" class="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50"><i class="fa-solid fa-sign-out-alt w-4"></i> Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- EDIT PROFILE MAIN CONTENT -->
+            <main class="flex-grow p-4 sm:p-6 lg:p-8 space-y-6">
+                
+                <div class="max-w-3xl mx-auto space-y-6">
+                    
+                    <!-- EDIT FORM CARD -->
+                    <div class="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
+                        
+                        <!-- Header Banner -->
+                        <div class="p-6 bg-slate-900 text-white flex justify-between items-center">
+                            <div>
+                                <h2 class="text-lg font-bold flex items-center gap-2">
+                                    <i class="fa-solid fa-user-pen text-indigo-400"></i> Edit Profile Details
+                                </h2>
+                                <p class="text-slate-400 text-xs mt-0.5">Modify your account information and click save changes.</p>
+                            </div>
+                            <a th:href="@{/user/profile}" class="text-xs text-slate-300 hover:text-white border border-slate-700 px-3 py-1.5 rounded-xl transition">
+                                <i class="fa-solid fa-arrow-left"></i> Back to Profile
+                            </a>
+                        </div>
+
+                        <!-- Form Body -->
+                        <form th:action="@{/user/update-profile-save}" method="post" enctype="multipart/form-data" class="p-6 sm:p-8 space-y-6">
+                            <input type="hidden" name="id" th:value="${user.id}">
+                            
+                            <!-- Profile Picture Change & Preview -->
+                            <div class="flex flex-col sm:flex-row items-center gap-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                <div class="relative flex-shrink-0">
+                                    <img id="profile-preview"
+                                         th:src="${user != null && user.imgUrl!= null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/120x120/6366f1/ffffff?text=U'"
+                                         class="w-24 h-24 rounded-2xl object-cover border-2 border-white shadow-md bg-white"
+                                         onerror="this.src='https://placehold.co/120x120/6366f1/ffffff?text=U'"
+                                         alt="Profile Preview">
+                                    <span class="absolute -bottom-1 -right-1 bg-indigo-600 text-white text-xs p-1.5 rounded-full shadow-md">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </span>
+                                </div>
+                                <div class="w-full space-y-1 text-center sm:text-left">
+                                    <label for="userImage" class="block text-xs font-bold text-slate-700">Profile Photo</label>
+                                    <input type="file" name="userImage" id="userImage" onchange="previewImage(event)" accept="image/*"
+                                           class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition cursor-pointer border border-slate-200 rounded-xl bg-white p-1">
+                                    <p class="text-[11px] text-slate-400">Supported formats: JPG, PNG, WEBP (Leave blank to keep current photo)</p>
+                                </div>
+                            </div>
+
+                            <!-- Full Name -->
+                            <div class="space-y-1.5">
+                                <label for="name" class="block text-sm font-bold text-slate-700">Full Name <span class="text-rose-500">*</span></label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                                        <i class="fa-solid fa-user text-sm"></i>
+                                    </div>
+                                    <input id="name" name="name" type="text" required th:value="${user != null ? user.name : ''}" placeholder="Enter full name"
+                                           class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
+                                </div>
+                            </div>
+
+                            <!-- Email Address (Readonly or Editable based on choice) -->
+                          <!--   <div class="space-y-1.5">
+                                <label for="email" class="block text-sm font-bold text-slate-700">Email Address <span class="text-rose-500">*</span></label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                                        <i class="fa-solid fa-envelope text-sm"></i>
+                                    </div>
+                                    <input id="email" name="email" type="email" required th:value="${user != null ? user.email : ''}" placeholder="user@example.com"
+                                           class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
+                                </div>
+                            </div>
+                            -->
+
+                            <!-- Work / Occupation (Optional) -->
+                          <!--   <div class="space-y-1.5">
+                                <label for="work" class="block text-sm font-bold text-slate-700">Work / Occupation</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                                        <i class="fa-solid fa-briefcase text-sm"></i>
+                                    </div>
+                                    <input id="work" name="work" type="text" th:value="${user != null ? user.work : ''}" placeholder="e.g. Java Developer / Student"
+                                           class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
+                                </div>
+                            </div>
+                             -->
+
+                            <!-- About / Description -->
+                            <div class="space-y-1.5">
+                                <label for="about" class="block text-sm font-bold text-slate-700">About / Bio</label>
+                                <div class="relative group">
+                                    <div class="absolute top-3 left-3.5 pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                                        <i class="fa-solid fa-align-left text-sm"></i>
+                                    </div>
+                                    <textarea id="about" name="about" rows="4" th:text="${user != null ? user.about : ''}" placeholder="Write something about yourself..."
+                                              class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-sm font-medium shadow-sm hover:border-slate-300 resize-none"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+                                <a th:href="@{/user/profile}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-xs transition">
+                                    Cancel
+                                </a>
+                                <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-200 hover:-translate-y-0.5 transition duration-150 flex items-center gap-2">
+                                    <i class="fa-solid fa-floppy-disk"></i> Save Profile
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+
+                </div>
+            </main>
+
+            <!-- FOOTER -->
+            <footer class="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400 mt-auto">
+                <p>&copy; 2026 Smart Contact Manager. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Photo Preview Function
+        function previewImage(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-preview').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Profile Dropdown Toggle
+        const dropdownBtn = document.getElementById('profile-dropdown-btn');
+        const dropdownMenu = document.getElementById('profile-dropdown');
+
+        if(dropdownBtn && dropdownMenu) {
+            dropdownBtn.addEventListener('click', (event) => {
+                dropdownMenu.classList.toggle('hidden');
+                event.stopPropagation();
+            });
+
+            window.addEventListener('click', () => {
+                if (!dropdownMenu.classList.contains('hidden')) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Mobile Sidebar Toggle
+        const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if(mobileToggleBtn && sidebar) {
+            mobileToggleBtn.addEventListener('click', (event) => {
+                sidebar.classList.toggle('-translate-x-full');
+                event.stopPropagation();
+            });
+
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth < 768) {
+                    if (!sidebar.contains(e.target) && e.target !== mobileToggleBtn) {
+                        sidebar.classList.add('-translate-x-full');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

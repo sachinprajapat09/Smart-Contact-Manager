@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Contact Manager</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans flex flex-col min-h-screen">
+
+    <!-- NAVIGATION BAR -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-2xl font-bold text-indigo-600 flex items-center gap-2">
+                        <i class="fa-solid fa-address-book"></i> SmartContact
+                    </span>
+                </div>
+                
+                <!-- Navigation Links (Desktop) - FEATURES REMOVED -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a th:href="@{/}" class="text-slate-600 hover:text-indigo-600 font-medium transition duration-150">Home</a>
+                    <a href="#about" class="text-slate-600 hover:text-indigo-600 font-medium transition duration-150">About</a>
+                </div>
+
+                <!-- Auth Buttons (Desktop) -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a th:href="@{/login}" class="text-indigo-600 hover:text-indigo-800 font-semibold px-4 py-2 transition duration-150">Login</a>
+                    <a th:href="@{/signup}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2 rounded-lg shadow transition duration-150">Sign Up</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-indigo-600 focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) - FEATURES REMOVED -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 px-4 pt-2 pb-4 space-y-2">
+            <a href="#" class="block text-slate-600 hover:bg-slate-50 hover:text-indigo-600 px-3 py-2 rounded-md font-medium">Home</a>
+            <a href="#about" class="block text-slate-600 hover:bg-slate-50 hover:text-indigo-600 px-3 py-2 rounded-md font-medium">About</a>
+            <div class="pt-2 border-t border-slate-100 flex flex-col gap-2">
+                <a th:href="@{/login}" class="text-center text-indigo-600 hover:bg-slate-50 font-semibold py-2 rounded-md">Login</a>
+                <a th:href="@{/signup}" class="text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-md">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="bg-gradient-to-br from-indigo-50 to-white py-16 lg:py-24 flex-grow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
+            <!-- Left Side Text Content -->
+            <div class="space-y-6 text-center lg:text-left">
+                <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider">
+                    Smart Solution for Contacts
+                </span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight">
+                    Manage your contacts <br class="hidden sm:inline">
+                    <span class="text-indigo-600">Smartly and Safely</span>
+                </h1>
+                <p class="text-lg text-slate-600 max-w-xl mx-auto lg:mx-0">
+                    Securely save all your contacts on the cloud. Access them from any device, update details anytime, and keep everything organized with ease.                </p>
+                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
+                    <a th:href="@{/signup}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-lg px-8 py-3.5 rounded-lg shadow-lg hover:shadow-xl transition duration-150 text-center">
+                        Get Started Free <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </a>
+                    <a href="#about" class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-lg px-8 py-3.5 rounded-lg shadow-sm transition duration-150 text-center">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Side Visual Box -->
+            <div class="flex justify-center">
+                <div class="relative w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
+                    <div class="absolute -top-6 -right-6 w-20 h-20 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+                    <div class="absolute -bottom-6 -left-6 w-24 h-24 bg-teal-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+                    
+                    <!-- Decorative Graphic Representation of Contact Cards -->
+                    <div class="space-y-4 relative">
+                        <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <div class="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center text-white font-bold">
+                                JD
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">John Doe</h4>
+                                <p class="text-sm text-slate-500"><i class="fa-solid fa-phone mr-1"></i> +1 234 567 890</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100 ml-6">
+                            <div class="w-12 h-12 bg-teal-500 rounded-full flex items-center justify-center text-white font-bold">
+                                AS
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">Amit Sharma</h4>
+                                <p class="text-sm text-slate-500"><i class="fa-solid fa-envelope mr-1"></i> amit@email.com</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <div class="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center text-white font-bold">
+                                RK
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">Riya Kapoor</h4>
+                                <p class="text-sm text-slate-500"><i class="fa-solid fa-briefcase mr-1"></i> UX Designer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ABOUT SECTION (Without Features Label) -->
+    <section id="about" class="bg-white py-16 border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl font-bold text-slate-900 sm:text-4xl">Why Choose Us?</h2>
+                <p class="mt-4 text-lg text-slate-600">Smart Contact Manager is the easiest and most secure way to store, organize, and manage your contacts. Easily search, filter, and access your contacts anytime, anywhere.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-slate-50 p-8 rounded-xl border border-slate-100 hover:shadow-md transition duration-200">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 mb-6">
+                        <i class="fa-solid fa-shield-halved text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">High Security</h3>
+                    <p class="text-slate-600">Your contact data is fully encrypted and protected. Only you can access your contacts, ensuring complete privacy and security.</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-slate-50 p-8 rounded-xl border border-slate-100 hover:shadow-md transition duration-200">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 mb-6">
+                        <i class="fa-solid fa-bolt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Fast Search</h3>
+                    <p class="text-slate-600">Quickly find any contact from thousands of saved contacts using powerful search and advanced filtering features.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-slate-50 p-8 rounded-xl border border-slate-100 hover:shadow-md transition duration-200">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 mb-6">
+                        <i class="fa-solid fa-cloud text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Cloud Sync</h3>
+                    <p class="text-slate-600">Access and manage your contacts seamlessly from your phone, laptop, or tablet. Your data stays synchronized across all your devices.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 py-12 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2 text-white font-bold text-xl">
+                <i class="fa-solid fa-address-book text-indigo-500"></i> SmartContact
+            </div>
+            <p class="text-sm text-center md:text-left">
+                &copy; 2026 Smart Contact Manager. All rights reserved.
+            </p>
+            <div class="flex space-x-6 text-lg">
+                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-github"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Simple JavaScript for Mobile Menu Toggle -->
+    <script>
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

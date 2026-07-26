@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Success - Smart Contact Manager</title>
+    
+    <!-- Tailwind CSS CDN for fluid modern grid layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome for professional UI icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Hide scrollbars for absolute clean dashboard look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Premium custom checkmark pop animation */
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+        @keyframes drawCheck {
+            0% { stroke-dashoffset: 48; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .animate-scale-in {
+            animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .animate-draw-check {
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: drawCheck 0.6s cubic-bezier(0.65, 0, 0.45, 1) 0.3s forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- MAIN WRAPPER CONTAINER -->
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- 1. SIDE NAVIGATION BAR (Hidden on Mobile, Sticky on Desktop) -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-400 flex flex-col justify-between border-r border-slate-800 transition-transform -translate-x-full md:translate-x-0 md:relative md:flex-shrink-0">
+            
+            <!-- Branding Logotype -->
+            <div>
+                <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
+                    <a th:href="@{/}" class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-md">
+                            <i class="fa-solid fa-address-book text-sm"></i>
+                        </div>
+                        <span>Smart<span class="text-indigo-400">Contact</span></span>
+                    </a>
+                </div>
+
+                <!-- Navigation Sidebar Workspace Actions -->
+                <nav class="p-4 space-y-1.5">
+                    <span class="px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Workspace</span>
+                    
+                    <a th:href="@{/user/index}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-chart-line text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <a th:href="@{/user/add-contact}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-user-plus text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Add Contact</span>
+                    </a>
+                    
+                    <a th:href="@{/user/show-contacts/0}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-users text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>View Contacts</span>
+                    </a>
+
+                    <span class="px-3 pt-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Account settings</span>
+
+                    <a th:href="@{/user/profile}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-user-gear text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>My Profile</span>
+                    </a>
+                    
+                    <a th:href="@{/user/settings}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white text-sm font-medium transition-all group">
+                        <i class="fa-solid fa-sliders text-base group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Profile Footer Metadata section (SAFE SPEL CHECK) -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950/40">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <!-- Render block only if user is NOT null -->
+                        <img th:if="${user != null}" 
+                             th:src="${user.imgUrl != null} ? @{'/img/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             class="w-10 h-10 rounded-xl bg-indigo-100 object-cover border border-slate-700" 
+                             onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             alt="Profile">
+                        <!-- Fallback block if user IS null -->
+                        <img th:if="${user == null}" 
+                             src="https://placehold.co/100x100/6366f1/ffffff?text=U" 
+                             class="w-10 h-10 rounded-xl bg-indigo-100 object-cover border border-slate-700" 
+                             alt="Profile">
+                        <div class="text-left overflow-hidden">
+                            <h5 class="text-sm font-bold text-white truncate" th:text="${user != null ? user.name : 'Guest User'}">John Doe</h5>
+                            <p class="text-xs text-slate-500 truncate" th:text="${user != null ? user.email : 'user@example.com'}">user@example.com</p>
+                        </div>
+                    </div>
+                    <a th:href="@{/logout}" class="p-2 text-slate-500 hover:text-rose-400 rounded-lg transition hover:bg-slate-800" title="Sign Out">
+                        <i class="fa-solid fa-right-from-bracket text-base"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 2. MAIN WORKING DISPLAY PANEL -->
+        <div class="flex-grow flex flex-col overflow-y-auto no-scrollbar relative">
+            
+            <!-- HEADER BAR PANEL -->
+            <header class="h-16 bg-white border-b border-slate-100 px-4 sm:px-6 flex justify-between items-center sticky top-0 z-30">
+                <div class="flex items-center gap-3">
+                    <button id="mobile-sidebar-toggle" class="md:hidden text-slate-600 hover:bg-slate-100 p-2 rounded-xl transition">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <span class="text-slate-500 text-sm font-semibold hidden sm:inline">Success Notification</span>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button class="relative p-2 text-slate-500 hover:bg-slate-100 rounded-xl transition">
+                        <i class="fa-solid fa-bell text-lg"></i>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full ring-2 ring-white"></span>
+                    </button>
+                    <div class="h-8 w-px bg-slate-100"></div>
+
+                    <!-- Dropdown Trigger Profile Button -->
+                    <div class="relative">
+                        <button id="profile-dropdown-btn" class="flex items-center gap-2 text-slate-700 focus:outline-none hover:opacity-90 transition">
+                            <img th:if="${user != null}" 
+                                 th:src="${user.imgUrl != null} ? @{'/img/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 class="w-8 h-8 rounded-lg bg-slate-200 object-cover" 
+                                 onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 alt="Avatar">
+                            <img th:if="${user == null}" 
+                                 src="https://placehold.co/100x100/6366f1/ffffff?text=U" 
+                                 class="w-8 h-8 rounded-lg bg-slate-200 object-cover" 
+                                 alt="Avatar">
+                            <span class="text-xs font-bold hidden md:inline" th:text="${user != null ? user.name : 'User'}">User</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 hidden md:inline"></i>
+                        </button>
+                        
+                        <!-- Dropdown Content -->
+                        <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50">
+                            <a th:href="@{/user/profile}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-user-circle w-4"></i> Profile</a>
+                            <a th:href="@{/user/settings}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-cog w-4"></i> Settings</a>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a th:href="@{/logout}" class="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50"><i class="fa-solid fa-sign-out-alt w-4"></i> Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- MAIN SUCCESS CARD CONTENT -->
+            <!-- STREAMING_CHUNK: Designing success checkmark card layout... -->
+            <main class="flex-grow p-4 sm:p-6 lg:p-8 flex items-center justify-center">
+                <div class="max-w-md w-full bg-white rounded-3xl border border-slate-100 shadow-xl p-8 text-center space-y-6">
+                    
+                    <!-- SVG Checkmark Icon with Smooth Dynamic Pop Animation -->
+                    <div class="flex justify-center">
+                        <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center animate-scale-in">
+                            <svg class="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" class="animate-draw-check" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Success Headers -->
+                    <div class="space-y-2">
+                        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Contact Saved!</h2>
+                        <p class="text-sm text-slate-500">The connection card has been successfully encrypted and added to your secure cloud sync workspace.</p>
+                    </div>
+
+                    <!-- Dynamic Contact Preview (Shows details if passed from the backend controller) -->
+                    <!-- STREAMING_CHUNK: Rendering conditional newly added contact details box... -->
+                    <div th:if="${contact != null}" class="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-left space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm border border-indigo-100">
+                                <span th:text="${#strings.substring(contact.name,0,1).toUpperCase()}">C</span>
+                            </div>
+                            <div class="overflow-hidden">
+                                <h4 class="font-bold text-slate-800 text-sm truncate" th:text="${contact.name}">Sanjeev Kumar</h4>
+                                <p class="text-xs text-slate-500 truncate" th:text="${contact.work != null && !contact.work.isEmpty() ? contact.work : 'No Designation Specified'}">Software Engineer</p>
+                            </div>
+                        </div>
+                        <div class="border-t border-slate-100 pt-3.5 grid grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <span class="block text-slate-400 font-medium">Email</span>
+                                <span class="font-bold text-slate-700 truncate block" th:text="${contact.email}">contact@example.com</span>
+                            </div>
+                            <div>
+                                <span class="block text-slate-400 font-medium">Phone</span>
+                                <span class="font-bold text-slate-700 truncate block" th:text="${contact.phone}">+91 9876543210</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Trigger Buttons -->
+                    <!-- STREAMING_CHUNK: Adding primary navigation action links... -->
+                    <div class="pt-4 flex flex-col gap-3">
+                        <a th:href="@{/user/add-contact}" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:shadow-indigo-200 hover:-translate-y-0.5 transition duration-150 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus-circle"></i> Add Another Contact
+                        </a>
+                        <a th:href="@{/user/show-contacts/0}" class="w-full py-3.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-bold rounded-2xl border border-slate-200 transition text-center block">
+                            <i class="fa-solid fa-users mr-1"></i> View All Contacts
+                        </a>
+                    </div>
+
+                </div>
+            </main>
+
+            <!-- FOOTER -->
+            <footer class="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400 mt-auto">
+                <p>&copy; 2026 Smart Contact Manager. All rights reserved. Encrypted cloud sync system.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE UI SCRIPTS -->
+    <script>
+        // Toggle Dropdown menu trigger for user configuration
+        const dropdownBtn = document.getElementById('profile-dropdown-btn');
+        const dropdownMenu = document.getElementById('profile-dropdown');
+
+        dropdownBtn.addEventListener('click', (event) => {
+            dropdownMenu.classList.toggle('hidden');
+            event.stopPropagation();
+        });
+
+        // Close dropdown when user clicks elsewhere
+        window.addEventListener('click', () => {
+            if (!dropdownMenu.classList.contains('hidden')) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
+
+        // Mobile sidebar navigation panel toggling scripts
+        const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        mobileToggleBtn.addEventListener('click', (event) => {
+            sidebar.classList.toggle('-translate-x-full');
+            event.stopPropagation();
+        });
+
+        // Close mobile drawer when clicked elsewhere
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth < 768) {
+                if (!sidebar.contains(e.target) && e.target !== mobileToggleBtn) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
