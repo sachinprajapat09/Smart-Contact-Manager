@@ -74,17 +74,25 @@ public class ForgotPasswordController {
 }
 
               @PostMapping("/verify-otp")
-              public String verifyotp(@RequestParam("otp") int useropt,HttpSession session){
+             
+       public String verifyotp(@RequestParam("otp") int useropt,HttpSession session){
 
-                 int sessionotp = (int) session.getAttribute("otp");
+    Object otpObj = session.getAttribute("otp");
 
-                  if(sessionotp== useropt){
-                      return"password_change_form";
-                  }else{
-                    return "verify-otp";
-                  }
+    if (otpObj == null) {
+        System.out.println("Session OTP not found");
+        return "redirect:/forgot-password";
+    }
 
-              }
+    int sessionotp = (int) otpObj;
+
+    if(sessionotp== useropt){
+        return"password_change_form";
+    }else{
+      return "verify-otp";
+    }
+
+}
 
               // pasworde change
               
