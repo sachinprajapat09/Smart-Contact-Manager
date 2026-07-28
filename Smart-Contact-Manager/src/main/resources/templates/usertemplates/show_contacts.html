@@ -87,10 +87,10 @@
                     <div class="flex items-center gap-3 overflow-hidden">
                         <!-- Render block only if user is NOT null -->
                         <img th:if="${user != null}" 
-                             th:src="${user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             th:src="${user.imgUrl != null and !user.imgUrl.isEmpty()} ? @{'/images/' + ${user.imgUrl}} : ('https://placehold.co/100x100/6366f1/ffffff?text=' + (${user.name != null and #strings.length(user.name) > 0} ? #strings.substring(user.name,0,1).toUpperCase() : 'U'))" 
                              class="rounded-xl bg-indigo-100 border border-slate-700" 
                              style="width: 40px !important; height: 40px !important; object-fit: cover !important;"
-                             onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             th:onerror="'this.src=\'https://placehold.co/100x100/6366f1/ffffff?text=' + (${user.name != null and #strings.length(user.name) > 0} ? #strings.substring(user.name,0,1).toUpperCase() : 'U') + '\''" 
                              alt="Profile">
                         <!-- Fallback block if user IS null -->
                         <img th:if="${user == null}" 
@@ -152,10 +152,10 @@
                         <button id="profile-dropdown-btn" class="flex items-center gap-2 text-slate-700 focus:outline-none hover:opacity-90 transition">
                             <!-- Render only if user is NOT null -->
                             <img th:if="${user != null}" 
-                                 th:src="${user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 th:src="${user.imgUrl != null and !user.imgUrl.isEmpty()} ? @{'/images/' + ${user.imgUrl}} : ('https://placehold.co/100x100/6366f1/ffffff?text=' + (${user.name != null and #strings.length(user.name) > 0} ? #strings.substring(user.name,0,1).toUpperCase() : 'U'))" 
                                  class="rounded-lg bg-slate-200" 
                                  style="width: 32px !important; height: 32px !important; object-fit: cover !important;"
-                                 onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 th:onerror="'this.src=\'https://placehold.co/100x100/6366f1/ffffff?text=' + (${user.name != null and #strings.length(user.name) > 0} ? #strings.substring(user.name,0,1).toUpperCase() : 'U') + '\''" 
                                  alt="Avatar">
                             <!-- Fallback if user IS null -->
                             <img th:if="${user == null}" 
