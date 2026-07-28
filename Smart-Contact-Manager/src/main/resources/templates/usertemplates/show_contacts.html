@@ -81,30 +81,25 @@
                 </nav>
             </div>
 
-            <!-- Profile Footer Metadata section -->
+            <!-- Profile Footer Metadata section (SAFE SPEL CHECK) -->
             <div class="p-4 border-t border-slate-800 bg-slate-950/40">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 overflow-hidden">
-                        
-                        <!-- Logged-in User Profile DP / Initial Letter Avatar -->
+                        <!-- Sidebar Profile Avatar with letter-avatar fallback -->
                         <div class="relative flex-shrink-0" style="width: 40px; height: 40px;">
-                            <!-- Image if user uploaded one -->
-                            <img th:if="${user != null && user.imgUrl != null && !user.imgUrl.isEmpty()}" 
-                                 th:src="@{'/images/' + ${user.imgUrl}}" 
-                                 class="rounded-xl border border-slate-700 bg-indigo-100" 
-                                 style="width: 40px !important; height: 40px !important; object-fit: cover !important;"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                            <img th:if="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()}"
+                                 th:src="@{'/images/' + ${user.imgUrl}}"
+                                 class="rounded-xl bg-indigo-100 border border-slate-700"
+                                 style="width: 40px !important; height: 40px !important; object-fit: cover !important; display: block;"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                  alt="Profile">
 
-                            <!-- Fallback Letter Avatar for Logged-in User -->
-                            <div th:classappend="${user != null} ? 'bg-indigo-600' : 'bg-slate-700'" 
-                                 class="rounded-xl text-white font-extrabold flex items-center justify-center text-sm shadow-inner"
-                                 style="width: 40px !important; height: 40px !important;"
-                                 th:styleappend="${user != null && user.imgUrl != null && !user.imgUrl.isEmpty()} ? 'display:none;' : 'display:flex;'">
-                                <span th:text="${user != null && user.name != null && !user.name.isEmpty() ? #strings.substring(user.name, 0, 1).toUpperCase() : 'G'}">U</span>
+                            <div th:style="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()} ? 'display:none;' : 'display:flex;'"
+                                 class="absolute inset-0 rounded-xl bg-indigo-600 text-white items-center justify-center font-bold text-sm uppercase shadow-sm"
+                                 style="width: 40px !important; height: 40px !important;">
+                                <span th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">U</span>
                             </div>
                         </div>
-
                         <div class="text-left overflow-hidden">
                             <h5 class="text-sm font-bold text-white truncate" th:text="${user != null ? user.name : 'Guest User'}">John Doe</h5>
                             <p class="text-xs text-slate-500 truncate" th:text="${user != null ? user.email : 'user@example.com'}">user@example.com</p>
@@ -120,7 +115,7 @@
         <!-- 2. MAIN WORKING DISPLAY PANEL -->
         <div class="flex-grow flex flex-col overflow-y-auto no-scrollbar relative">
             
-            <!-- HEADER BAR PANEL -->
+            <!-- HEADER BAR PANEL (SAFE SPEL CHECK) -->
             <header class="h-16 bg-white border-b border-slate-100 px-4 sm:px-6 flex justify-between items-center sticky top-0 z-30">
                 <!-- Mobile Burger Button & Search Container -->
                 <div class="flex items-center gap-3 flex-1 max-w-md">
@@ -157,23 +152,21 @@
                     <!-- Dropdown Trigger Profile Button -->
                     <div class="relative">
                         <button id="profile-dropdown-btn" class="flex items-center gap-2 text-slate-700 focus:outline-none hover:opacity-90 transition">
-                            
-                            <!-- Header Avatar Logic -->
-                            <div class="relative flex-shrink-0" style="width: 32px; height: 32px;">
-                                <img th:if="${user != null && user.imgUrl != null && !user.imgUrl.isEmpty()}" 
-                                     th:src="@{'/images/' + ${user.imgUrl}}" 
-                                     class="rounded-lg bg-slate-200" 
-                                     style="width: 32px !important; height: 32px !important; object-fit: cover !important;"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                            <!-- Navbar Profile Avatar with letter-avatar fallback -->
+                            <div class="relative" style="width: 32px; height: 32px;">
+                                <img th:if="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()}"
+                                     th:src="@{'/images/' + ${user.imgUrl}}"
+                                     class="rounded-lg bg-slate-200"
+                                     style="width: 32px !important; height: 32px !important; object-fit: cover !important; display: block;"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                      alt="Avatar">
 
-                                <div class="rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-xs"
-                                     style="width: 32px !important; height: 32px !important;"
-                                     th:styleappend="${user != null && user.imgUrl != null && !user.imgUrl.isEmpty()} ? 'display:none;' : 'display:flex;'">
-                                    <span th:text="${user != null && user.name != null && !user.name.isEmpty() ? #strings.substring(user.name, 0, 1).toUpperCase() : 'U'}">U</span>
+                                <div th:style="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()} ? 'display:none;' : 'display:flex;'"
+                                     class="absolute inset-0 rounded-lg bg-indigo-600 text-white items-center justify-center font-bold text-xs uppercase"
+                                     style="width: 32px !important; height: 32px !important;">
+                                    <span th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">U</span>
                                 </div>
                             </div>
-
                             <span class="text-xs font-bold hidden md:inline" th:text="${user != null ? user.name : 'User'}">User</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 hidden md:inline"></i>
                         </button>
@@ -225,7 +218,7 @@
                         </a>
                     </div>
 
-                    <!-- TABLE CONTENT AREA -->
+                    <!-- TABLE CONTENT AREA (CID Completely Removed) -->
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse" id="contacts-table">
                             <thead>
@@ -239,13 +232,14 @@
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-sm font-medium">
                                 
-                                <!-- Thymeleaf Iteration Loop on Contact List -->
+                                <!-- Thymeleaf Iteration Loop on Contact List (CID Cell removed) -->
                                 <tr th:each="c : ${contacts}" class="hover:bg-slate-50/50 transition contact-row">
                                     
                                     <!-- Contact Name with Profile Image and optional Nickname (secondName) -->
                                     <td class="px-6 py-4 flex items-center gap-3">
+                                        <!-- Fixed size wrapper container to lock rendering borders and avoid squeezing -->
                                         <div class="relative flex-shrink-0" style="width: 40px; height: 40px;">
-                                            <!-- Contact Image -->
+                                            <!-- If contact.img is NOT null and NOT empty -->
                                             <img th:if="${c.img != null && !c.img.isEmpty()}"
                                                  th:src="@{'/images/' + ${c.img}}"
                                                  class="border border-slate-100 bg-indigo-50"
@@ -253,12 +247,12 @@
                                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                                  alt="Profile">
                                             
-                                            <!-- Fallback Initial Letter Badge -->
+                                            <!-- Dynamic fallback initials badge styling (if image fails or is null) -->
                                             <div th:classappend="${c.cid % 2 == 0} ? 'bg-indigo-500' : 'bg-purple-500'" 
                                                  class="absolute inset-0 text-white font-extrabold flex items-center justify-center text-sm shadow-inner"
                                                  style="width: 40px !important; height: 40px !important; border-radius: 12px;"
                                                  th:styleappend="${c.img != null && !c.img.isEmpty()} ? 'display:none;' : 'display:flex;'">
-                                                <span th:text="${c.name != null && !c.name.isEmpty() ? #strings.substring(c.name,0,1).toUpperCase() : 'C'}">C</span>
+                                                <span th:text="${#strings.substring(c.name,0,1).toUpperCase()}">S</span>
                                             </div>
                                         </div>
                                         <div>
@@ -294,9 +288,17 @@
                                     <!-- Operations Actions Column -->
                                     <td class="px-6 py-4 text-center">
                                         <div class="flex items-center justify-center gap-2">
+                                            <!-- Detailed Connection Profile View -->
+                                             <!--
+                                            <a th:href="@{'/user/contact/' + ${c.cid}}" class="p-2 text-slate-400 hover:text-indigo-600 rounded-xl hover:bg-indigo-50 transition" title="Show Details">
+                                                <i class="fa-solid fa-eye text-sm"></i>
+                                            </a>
+                                            -->
+                                            <!-- Edit Operation link mapping -->
                                             <a th:href="@{'/user/update-contact/' + ${c.cid}}" class="p-2 text-slate-400 hover:text-emerald-600 rounded-xl hover:bg-emerald-50 transition" title="Update Details">
                                                 <i class="fa-solid fa-pencil text-sm"></i>
                                             </a>
+                                            <!-- Delete operation request mapped with secure confirmation custom prompt -->
                                             <button th:onclick="|deleteContactConfirm(${c.cid})|" class="p-2 text-slate-400 hover:text-rose-600 rounded-xl hover:bg-rose-50 transition" title="Delete Connection">
                                                 <i class="fa-solid fa-trash-can text-sm"></i>
                                             </button>
@@ -304,7 +306,7 @@
                                     </td>
                                 </tr>
 
-                                <!-- Empty Fallback row if contacts list size is 0 -->
+                                <!-- Empty Fallback row if contacts list size is 0 (Colspan adjusted to 5 since CID is deleted) -->
                                 <tr th:if="${#lists.isEmpty(contacts)}">
                                     <td colspan="5" class="px-6 py-16 text-center text-slate-400">
                                         <div class="w-16 h-16 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center text-xl mx-auto mb-3">
@@ -363,9 +365,11 @@
         </div>
     </div>
 
-    <!-- CUSTOM SECURE DELETE PROMPT/MODAL -->
+    <!-- CUSTOM SECURE DELETE PROMPT/MODAL (Never uses alert or confirm) -->
     <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Backdrop blur overlay -->
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+        <!-- Modal panel box -->
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative z-10 border border-slate-100 scale-95 transition-transform duration-300 space-y-5">
             <div class="text-center">
                 <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center text-xl mx-auto mb-4">
@@ -376,40 +380,167 @@
             </div>
             <div class="flex items-center gap-3">
                 <button onclick="closeDeleteModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">
-                    Cancel
+                    No, Cancel
                 </button>
-                <a id="confirm-delete-btn" href="#" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition text-center shadow-lg shadow-rose-200">
-                    Delete
+                <a id="modal-delete-link" href="#" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition text-center block">
+                    Yes, Delete
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Interactions -->
+    <!-- INTERACTIVE SCRIPTS -->
     <script>
-        function deleteContactConfirm(cid) {
-            const deleteBtn = document.getElementById('confirm-delete-btn');
-            deleteBtn.href = '/user/delete/' + cid;
-            document.getElementById('delete-modal').classList.remove('hidden');
+        // Toggle Dropdown menu trigger for user configuration
+        const dropdownBtn = document.getElementById('profile-dropdown-btn');
+        const dropdownMenu = document.getElementById('profile-dropdown');
+
+        dropdownBtn.addEventListener('click', (event) => {
+            dropdownMenu.classList.toggle('hidden');
+            event.stopPropagation();
+        });
+
+        // Close dropdown when user clicks elsewhere
+        window.addEventListener('click', (e) => {
+            if (!dropdownMenu.classList.contains('hidden')) {
+                dropdownMenu.classList.add('hidden');
+            }
+            // Close live search result box when clicking outside
+            const resultBox = document.getElementById('search-result-box');
+            if (resultBox && !resultBox.contains(e.target)) {
+                resultBox.classList.add('hidden');
+            }
+        });
+
+        // Mobile sidebar navigation panel toggling scripts
+        const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        mobileToggleBtn.addEventListener('click', (event) => {
+            sidebar.classList.toggle('-translate-x-full');
+            event.stopPropagation();
+        });
+
+        // Close mobile drawer when clicked elsewhere
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth < 768) {
+                if (!sidebar.contains(e.target) && e.target !== mobileToggleBtn) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            }
+        });
+
+        // DYNAMIC CONTACT SEARCH FUNCTIONALITY (Both Table Filter + Backend API Fetch Dropdown)
+        function searchContacts() {
+            const query = document.getElementById('search-input').value.trim();
+            const filterValue = query.toLowerCase();
+            const rows = document.querySelectorAll('.contact-row');
+            const clearBtn = document.getElementById('clear-search-btn');
+            const resultBox = document.getElementById('search-result-box');
+
+            // Show/Hide Clear button
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+                resultBox.classList.add('hidden');
+            }
+
+            // 1. Client-side Page Table Filtering
+            rows.forEach(row => {
+                const name = row.querySelector('.search-name') ? row.querySelector('.search-name').textContent.toLowerCase() : '';
+                const email = row.querySelector('.search-email') ? row.querySelector('.search-email').textContent.toLowerCase() : '';
+                const phone = row.querySelector('.search-phone') ? row.querySelector('.search-phone').textContent.toLowerCase() : '';
+
+                if (name.includes(filterValue) || email.includes(filterValue) || phone.includes(filterValue)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            // 2. Fetch Backend Search Suggestions (Spring Boot Controller API /search/{query})
+            if (query.length > 1) {
+              let url = `/user/search?keyword=${encodeURIComponent(query)}`;
+                fetch(url)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        let htmlContent = '';
+                        if (data && data.length > 0) {
+                            data.forEach((contact) => {
+                                const imgSrc = contact.img ? `/images/${contact.img}` : 'https://placehold.co/100x100/6366f1/ffffff?text=' + contact.name.charAt(0).toUpperCase();
+                                htmlContent += `
+                                    <a href="/user/contact/${contact.cid}" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition group">
+                                        <img src="${imgSrc}" class="w-8 h-8 rounded-lg object-cover bg-slate-100 border border-slate-200 flex-shrink-0" onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'">
+                                        <div class="overflow-hidden">
+                                            <p class="text-xs font-bold text-slate-800 group-hover:text-indigo-600 truncate">${contact.name}</p>
+                                            <p class="text-[11px] text-slate-400 truncate">${contact.phone || contact.email}</p>
+                                        </div>
+                                    </a>
+                                `;
+                            });
+                            resultBox.innerHTML = htmlContent;
+                            resultBox.classList.remove('hidden');
+                        } else {
+                             resultBox.classList.add('hidden');
+                        }
+                    })
+                    .catch((error) => {
+                        // Fallback handling if REST endpoint is not configured
+                        console.log("Live backend search endpoint not available, relying on local table filter.");
+                    });
+            } else {
+                resultBox.classList.add('hidden');
+            }
         }
 
+        // Clear search input and restore view
+        function clearSearch() {
+            const input = document.getElementById('search-input');
+            input.value = '';
+            searchContacts();
+            input.focus();
+        }
+
+        // Custom modal controls (Replacing alert / confirm)
+        let deleteId = null;
+        function deleteContactConfirm(id) {
+            deleteId = id;
+            const modal = document.getElementById('delete-modal');
+            const deleteLink = document.getElementById('modal-delete-link');
+            
+            // Set dynamic delete link URL pattern
+            deleteLink.href = `/user/delete/${id}`;
+            
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        // Close delete confirmation custom pop-up dialog
         function closeDeleteModal() {
-            document.getElementById('delete-modal').classList.add('hidden');
+            const modal = document.getElementById('delete-modal');
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
         }
 
+        // Animated toast dismissal helper routines
         function dismissSessionToast() {
             const toast = document.getElementById('session-toast');
-            if (toast) toast.remove();
+            if (toast) {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    toast.remove();
+                }, 400);
+            }
         }
 
-        // Profile Dropdown Toggle
-        const dropdownBtn = document.getElementById('profile-dropdown-btn');
-        const dropdown = document.getElementById('profile-dropdown');
-        if (dropdownBtn && dropdown) {
-            dropdownBtn.addEventListener('click', () => {
-                dropdown.classList.toggle('hidden');
-            });
-        }
+        // Auto dismiss alerts after 5 seconds
+        window.addEventListener('DOMContentLoaded', () => {
+            const toast = document.getElementById('session-toast');
+            if (toast) {
+                setTimeout(dismissSessionToast, 5000);
+            }
+        });
     </script>
 </body>
 </html>
