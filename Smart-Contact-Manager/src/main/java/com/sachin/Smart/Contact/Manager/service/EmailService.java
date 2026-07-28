@@ -13,6 +13,8 @@ public class EmailService {
 
         public void sendmail(String to,String subject,String  messega){
 
+             try{
+                    System.out.println("Mail sending start");
                 SimpleMailMessage   mail= new SimpleMailMessage();
 
                   mail.setTo(to);
@@ -21,6 +23,12 @@ public class EmailService {
 
                   // yaha javamail sender ko mail ka obj ka data send  ho raha he 
                  javaMailSender.send(mail);
+                  System.out.println("Mail sent successfully");
+             } catch (Exception e) {
+
+            System.out.println("MAIL ERROR");
+            e.printStackTrace();
+        }
                    
         }
     
