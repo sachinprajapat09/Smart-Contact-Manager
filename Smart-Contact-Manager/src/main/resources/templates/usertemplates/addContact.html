@@ -81,17 +81,23 @@
                 </nav>
             </div>
 
-            <!-- Profile Footer Metadata section (UPDATED: First-Letter Avatar) -->
+            <!-- Profile Footer Metadata section (SAFE SPEL CHECK) -->
             <div class="p-4 border-t border-slate-800 bg-slate-950/40">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 overflow-hidden">
-                        
-                        <!-- Dynamic First Letter Profile Icon -->
-                        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-base uppercase shadow-md flex-shrink-0 border border-indigo-500/30"
-                             th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">
-                            U
-                        </div>
+                        <!-- Sidebar Profile Avatar with letter-avatar fallback -->
+                        <div class="relative w-10 h-10 flex-shrink-0">
+                            <img th:if="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()}"
+                                 th:src="@{'/images/' + ${user.imgUrl}}"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 class="w-10 h-10 rounded-xl object-cover border border-slate-700"
+                                 alt="Profile"/>
 
+                            <div th:style="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()} ? 'display:none;' : 'display:flex;'"
+                                 class="w-10 h-10 rounded-xl bg-indigo-600 text-white items-center justify-center font-bold text-sm uppercase shadow-sm">
+                                <span th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">U</span>
+                            </div>
+                        </div>
                         <div class="text-left overflow-hidden">
                             <h5 class="text-sm font-bold text-white truncate" th:text="${user != null ? user.name : 'Guest User'}">John Doe</h5>
                             <p class="text-xs text-slate-500 truncate" th:text="${user != null ? user.email : 'user@example.com'}">user@example.com</p>
@@ -107,7 +113,7 @@
         <!-- 2. MAIN WORKING DISPLAY PANEL -->
         <div class="flex-grow flex flex-col overflow-y-auto no-scrollbar relative">
             
-            <!-- HEADER BAR PANEL -->
+            <!-- HEADER BAR PANEL (SAFE SPEL CHECK) -->
             <header class="h-16 bg-white border-b border-slate-100 px-4 sm:px-6 flex justify-between items-center sticky top-0 z-30">
                 <!-- Mobile Burger Button -->
                 <div class="flex items-center gap-3">
@@ -126,16 +132,22 @@
                     
                     <div class="h-8 w-px bg-slate-100"></div>
 
-                    <!-- Dropdown Trigger Profile Button (UPDATED: First-Letter Avatar) -->
+                    <!-- Dropdown Trigger Profile Button -->
                     <div class="relative">
                         <button id="profile-dropdown-btn" class="flex items-center gap-2 text-slate-700 focus:outline-none hover:opacity-90 transition">
-                            
-                            <!-- Header First Letter Avatar Icon -->
-                            <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-xs uppercase shadow-sm flex-shrink-0"
-                                 th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">
-                                U
-                            </div>
+                            <!-- Navbar Profile Avatar with letter-avatar fallback -->
+                            <div class="relative w-8 h-8">
+                                <img th:if="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()}"
+                                     th:src="@{'/images/' + ${user.imgUrl}}"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                     class="w-8 h-8 rounded-lg object-cover"
+                                     alt="Avatar"/>
 
+                                <div th:style="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()} ? 'display:none;' : 'display:flex;'"
+                                     class="w-8 h-8 rounded-lg bg-indigo-600 text-white items-center justify-center font-bold text-xs uppercase">
+                                    <span th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">U</span>
+                                </div>
+                            </div>
                             <span class="text-xs font-bold hidden md:inline" th:text="${user != null ? user.name : 'User'}">User</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 hidden md:inline"></i>
                         </button>
@@ -195,7 +207,7 @@
                           class="p-6 sm:p-8 space-y-6"
                           onsubmit="showSaveLoading()">
                         
-                        <!-- Row 1: Name & Nick Name -->
+                        <!-- Row 1: Name & Nick Name (Grid Layout with original placeholders) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             
                             <!-- First/Primary Name Field -->
@@ -206,6 +218,7 @@
                                         <i class="fa-solid fa-user text-sm"></i>
                                     </div>
                                     <input id="name" th:field="*{name}" type="text" required
+                                          
                                            class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
                                 </div>
                             </div>
@@ -218,6 +231,7 @@
                                         <i class="fa-solid fa-user-tag text-sm"></i>
                                     </div>
                                     <input id="secondName" th:field="*{secondName}" type="text"
+                                         
                                            class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
                                 </div>
                             </div>
@@ -231,11 +245,12 @@
                                     <i class="fa-solid fa-briefcase text-sm"></i>
                                 </div>
                                 <input id="work" th:field="*{work}" type="text"
+                                     
                                        class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
                             </div>
                         </div>
 
-                        <!-- Row 3: Email & Phone Number -->
+                        <!-- Row 3: Email & Phone Number (Grid Layout) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             
                             <!-- Email Input -->
@@ -246,6 +261,7 @@
                                         <i class="fa-solid fa-envelope text-sm"></i>
                                     </div>
                                     <input id="email" th:field="*{email}" type="email" required
+                                         
                                            class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
                                 </div>
                             </div>
@@ -258,12 +274,13 @@
                                         <i class="fa-solid fa-phone text-sm"></i>
                                     </div>
                                     <input id="phone" th:field="*{phone}" type="tel" required
+                                          
                                            class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium shadow-sm hover:border-slate-300">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Row 4: Contact About -->
+                        <!-- Row 4: Contact About (TextArea Description) -->
                         <div class="space-y-1.5">
                             <label for="contactAbout" class="block text-sm font-bold text-slate-700">About Connection (Notes)</label>
                             <div class="relative group">
@@ -271,16 +288,17 @@
                                     <i class="fa-solid fa-align-left text-sm"></i>
                                 </div>
                                 <textarea id="contactAbout" th:field="*{contactAbout}" rows="4"
+                                        
                                           class="appearance-none rounded-xl relative block w-full pl-11 pr-4 py-3 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium shadow-sm hover:border-slate-300 resize-none"></textarea>
                             </div>
                         </div>
 
-                        <!-- Row 5: Profile Upload Block & Real-time preview panel -->
+                        <!-- Row 5: Profile Upload Block & Real-time preview panel (IMAGE RECOVERY WITH PURPLE PLACEHOLDER AS IN image_b1fb09.png) -->
                         <div class="space-y-1.5">
                             <label class="block text-sm font-bold text-slate-700">Profile Image</label>
                             <div class="flex flex-col sm:flex-row items-center gap-6 p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
                                 
-                                <!-- Preview box -->
+                                <!-- Preview box with purple placeholder as shown in image_b1fb09.png -->
                                 <div class="relative">
                                     <img id="image-preview" src="https://placehold.co/120x120/6366f1/ffffff?text=Add+Photo"
                                          class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white bg-indigo-500 shadow-md object-cover"
@@ -290,12 +308,14 @@
                                     </span>
                                 </div>
 
-                                <!-- File upload selector -->
+                                <!-- Real file upload selector -->
                                 <div class="flex-grow text-center sm:text-left space-y-1">
                                     <div class="relative inline-block">
+                                        <!-- Custom style selector trigger -->
                                         <label for="profileImage" class="cursor-pointer bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition flex items-center gap-2">
                                             <i class="fa-solid fa-folder-open text-indigo-500"></i> Choose Contact Photo
                                         </label>
+                                        <!-- Real file upload field parsed by backend MultipartFile configuration parameter 'profileImage' -->
                                         <input id="profileImage" name="profileImage" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="previewProfileImage(event)">
                                     </div>
                                     <p class="text-[11px] text-slate-400">Accepted formats: JPG, PNG, WEBP. Maximum file limit 1 MB.</p>
@@ -312,6 +332,7 @@
                                 <span id="btn-text" class="flex items-center gap-2">
                                     Save Connection <i class="fa-solid fa-circle-check"></i>
                                 </span>
+                                <!-- Loading spinner for submission request processes -->
                                 <span id="btn-spinner" class="hidden">
                                     <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -333,6 +354,7 @@
 
     <!-- INTERACTIVE UI SCRIPTS -->
     <script>
+        // Toggle Dropdown menu trigger for user configuration
         const dropdownBtn = document.getElementById('profile-dropdown-btn');
         const dropdownMenu = document.getElementById('profile-dropdown');
 
@@ -341,12 +363,14 @@
             event.stopPropagation();
         });
 
+        // Close dropdown when user clicks elsewhere
         window.addEventListener('click', () => {
             if (!dropdownMenu.classList.contains('hidden')) {
                 dropdownMenu.classList.add('hidden');
             }
         });
 
+        // Mobile sidebar navigation panel toggling scripts
         const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
         const sidebar = document.getElementById('sidebar');
 
@@ -355,6 +379,7 @@
             event.stopPropagation();
         });
 
+        // Close mobile drawer when clicked elsewhere
         document.addEventListener('click', (e) => {
             if (window.innerWidth < 768) {
                 if (!sidebar.contains(e.target) && e.target !== mobileToggleBtn) {
@@ -363,6 +388,7 @@
             }
         });
 
+        // Real-time custom profile photo previewing loader
         function previewProfileImage(event) {
             const preview = document.getElementById('image-preview');
             const file = event.target.files[0];
@@ -376,11 +402,13 @@
             }
         }
 
+        // Reset image preview when form is reset
         function resetFormPreview() {
             const preview = document.getElementById('image-preview');
             preview.src = "https://placehold.co/120x120/6366f1/ffffff?text=Add+Photo";
         }
 
+        // Show submit buttons loading spinner animation state on multipart submit
         function showSaveLoading() {
             const saveBtn = document.getElementById('save-btn');
             const btnText = document.getElementById('btn-text');
@@ -393,6 +421,7 @@
             return true;
         }
 
+        // Animated toast dismissal helper routines
         function dismissSessionToast() {
             const toast = document.getElementById('session-toast');
             if (toast) {
@@ -403,6 +432,7 @@
             }
         }
 
+        // Auto dismiss dashboard session alerts after 5 seconds
         window.addEventListener('DOMContentLoaded', () => {
             const toast = document.getElementById('session-toast');
             if (toast) {
