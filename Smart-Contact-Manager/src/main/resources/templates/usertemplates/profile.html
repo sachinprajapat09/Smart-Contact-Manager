@@ -83,11 +83,12 @@
             <div class="p-4 border-t border-slate-800 bg-slate-950/40">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 overflow-hidden">
+                        <!-- Sidebar Bottom DP -->
                         <img th:if="${user != null}" 
-                             th:src="${user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             th:src="${user.imgUrl != null && !user.imgUrl.isEmpty()} ? @{'/images/' + ${user.imgUrl}} : 'https://ui-avatars.com/api/?name=' + ${#strings.substring(user.name,0,1)} + '&background=6366f1&color=fff&bold=true'" 
                              class="rounded-xl bg-indigo-100 border border-slate-700" 
                              style="width: 40px !important; height: 40px !important; object-fit: cover !important;"
-                             onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             th:attr="onerror='this.onerror=null;this.src=\'https://ui-avatars.com/api/?name=' + ${user != null && user.name != null ? #strings.substring(user.name,0,1) : 'U'} + '&background=6366f1&color=fff&bold=true\';'"
                              alt="Profile">
                         <div class="text-left overflow-hidden">
                             <h5 class="text-sm font-bold text-white truncate" th:text="${user != null ? user.name : 'Guest User'}">John Doe</h5>
@@ -115,12 +116,13 @@
 
                 <div class="flex items-center gap-4">
                     <div class="relative">
+                        <!-- Top Corner Dropdown DP -->
                         <button id="profile-dropdown-btn" class="flex items-center gap-2 text-slate-700 focus:outline-none hover:opacity-90 transition">
                             <img th:if="${user != null}" 
-                                 th:src="${user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 th:src="${user.imgUrl != null && !user.imgUrl.isEmpty()} ? @{'/images/' + ${user.imgUrl}} : 'https://ui-avatars.com/api/?name=' + ${#strings.substring(user.name,0,1)} + '&background=6366f1&color=fff&bold=true'" 
                                  class="rounded-lg bg-slate-200" 
                                  style="width: 32px !important; height: 32px !important; object-fit: cover !important;"
-                                 onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 th:attr="onerror='this.onerror=null;this.src=\'https://ui-avatars.com/api/?name=' + ${user != null && user.name != null ? #strings.substring(user.name,0,1) : 'U'} + '&background=6366f1&color=fff&bold=true\';'"
                                  alt="Avatar">
                             <span class="text-xs font-bold hidden md:inline" th:text="${user != null ? user.name : 'User'}">User</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 hidden md:inline"></i>
@@ -156,12 +158,12 @@
                         <div class="px-6 pb-6 relative">
                             <div class="flex flex-col sm:flex-row items-center sm:items-end justify-between -mt-16 sm:-mt-12 gap-4">
                                 
-                                <!-- User Avatar & Name -->
+                                <!-- User Main Avatar & Name -->
                                 <div class="flex flex-col sm:flex-row items-center sm:items-end gap-4 text-center sm:text-left">
                                     <div class="relative">
-                                        <img th:src="${user != null && user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/150x150/6366f1/ffffff?text=U'" 
+                                        <img th:src="${user != null && user.imgUrl != null && !user.imgUrl.isEmpty()} ? @{'/images/' + ${user.imgUrl}} : 'https://ui-avatars.com/api/?name=' + ${user != null && user.name != null ? #strings.substring(user.name,0,1) : 'U'} + '&background=6366f1&color=fff&bold=true&size=150'" 
                                              class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover border-4 border-white shadow-xl bg-slate-100" 
-                                             onerror="this.src='https://placehold.co/150x150/6366f1/ffffff?text=U'" 
+                                             th:attr="onerror='this.onerror=null;this.src=\'https://ui-avatars.com/api/?name=' + ${user != null && user.name != null ? #strings.substring(user.name,0,1) : 'U'} + '&background=6366f1&color=fff&bold=true&size=150\';'"
                                              alt="User Avatar">
                                         <span class="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 border-2 border-white rounded-full" title="Active Account"></span>
                                     </div>
@@ -174,7 +176,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Action Buttons (Updated to Edit Profile) -->
+                                <!-- Action Buttons -->
                                 <div class="flex items-center gap-2">
                                     <a th:href="@{/user/edit-profile}" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 flex items-center gap-2">
                                         <i class="fa-solid fa-pen-to-square"></i> Edit Profile
@@ -197,11 +199,6 @@
                                 <div>
                                     <span class="text-[11px] font-bold uppercase text-slate-400 block">User ID</span>
                                     <p class="text-sm font-semibold text-slate-800" th:text="${user != null ? '#USER-' + user.id : '#USER-1'}">#USER-1</p>
-                                </div>
-                                <div>
-                                    <!-- <span class="text-[11px] font-bold uppercase text-slate-400 block">Phone Number</span>
-                                    <p class="text-sm font-semibold text-slate-800" th:text="${user != null && user.phone != null && !user.phone.isEmpty()} ? ${user.phone} : 'Not Provided'">Not Provided</p>
-                                    -->
                                 </div>
                                 <div>
                                     <span class="text-[11px] font-bold uppercase text-slate-400 block">Account Status</span>
