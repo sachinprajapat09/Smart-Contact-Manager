@@ -71,19 +71,27 @@
                 </nav>
             </div>
 
-            <!-- User Info Footer -->
+            <!-- User Info Footer (FIXED) -->
             <div class="p-4 border-t border-slate-800 bg-slate-950/40">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 overflow-hidden">
-                        <img th:if="${user != null && user.imgUrl != null && !user.imgUrl.isEmpty()}"
-     th:src="@{'/images/' + ${user.imgUrl}}"
-     class="w-10 h-10 rounded-xl object-cover border border-slate-700"
-     alt="Profile"/>
+                        
+                        <!-- User Profile Avatar Wrapper -->
+                        <div class="relative w-10 h-10 flex-shrink-0">
+                            <!-- User Uploaded Image -->
+                            <img th:if="${user != null and user.imgUrl != null and user.imgUrl != '' and user.imgUrl != 'default.png' and user.imgUrl != 'contact.png'}"
+                                 th:src="@{'/images/' + ${user.imgUrl}}"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 class="w-10 h-10 rounded-xl object-cover border border-slate-700"
+                                 alt="Profile"/>
 
-<div th:unless="${user != null && user.imgUrl != null && !user.imgUrl.isEmpty()}"
-     class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">
-    <span th:text="${#strings.substring(user.name,0,1)}">U</span>
-</div>
+                            <!-- Dynamic Fallback Avatar -->
+                            <div th:style="${user != null and user.imgUrl != null and user.imgUrl != '' and user.imgUrl != 'default.png' and user.imgUrl != 'contact.png'} ? 'display:none;' : 'display:flex;'"
+                                 class="w-10 h-10 rounded-xl bg-indigo-600 text-white font-bold items-center justify-center text-sm uppercase shadow-sm">
+                                <span th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">U</span>
+                            </div>
+                        </div>
+
                         <div class="text-left overflow-hidden">
                             <h5 class="text-sm font-bold text-white truncate" th:text="${user != null ? user.name : 'Guest User'}">User Name</h5>
                             <p class="text-xs text-slate-500 truncate" th:text="${user != null ? user.email : 'user@example.com'}">user@example.com</p>
@@ -130,14 +138,14 @@
                             <!-- User Profile Avatar Wrapper -->
                             <div class="relative w-8 h-8 flex-shrink-0">
                                 <!-- User Uploaded Image -->
-                                <img th:if="${user != null and user.imgUrl != null and user.imgUrl != '' and user.imgUrl != 'default.png'}"
+                                <img th:if="${user != null and user.imgUrl != null and user.imgUrl != '' and user.imgUrl != 'default.png' and user.imgUrl != 'contact.png'}"
                                      th:src="@{'/images/' + ${user.imgUrl}}"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                      class="w-8 h-8 rounded-lg bg-slate-200 object-cover"
                                      alt="Avatar">
 
                                 <!-- Fallback Name First-Letter Badge for User -->
-                                <div th:style="${user != null and user.imgUrl != null and user.imgUrl != '' and user.imgUrl != 'default.png'} ? 'display:none;' : 'display:flex;'"
+                                <div th:style="${user != null and user.imgUrl != null and user.imgUrl != '' and user.imgUrl != 'default.png' and user.imgUrl != 'contact.png'} ? 'display:none;' : 'display:flex;'"
                                      class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-bold items-center justify-center text-xs uppercase shadow-sm"
                                      th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">
                                     U
@@ -251,7 +259,7 @@
                                                  class="w-9 h-9 rounded-full object-cover border border-slate-200" 
                                                  alt="Contact Profile">
                                             
-                                            <!-- Dynamic Letter Avatar (Show automatically if image is missing/broken) -->
+                                            <!-- Dynamic Letter Avatar -->
                                             <div th:style="${c.img != null and c.img != '' and c.img != 'contact.png' and c.img != 'default.png'} ? 'display:none;' : 'display:flex;'" 
                                                  class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold items-center justify-center text-xs uppercase shadow-sm"
                                                  th:text="${c.name != null and #strings.length(c.name) > 0 ? #strings.substring(c.name, 0, 1) : 'C'}">
