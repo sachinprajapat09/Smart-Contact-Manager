@@ -71,14 +71,23 @@
                 </nav>
             </div>
 
-            <!-- User Info Footer (Name First Letter Profile) -->
+            <!-- User Info Footer -->
             <div class="p-4 border-t border-slate-800 bg-slate-950/40">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 overflow-hidden">
                         
-                        <!-- First-Letter Avatar Badge -->
-                        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-base uppercase shadow-md flex-shrink-0 border border-indigo-500/30">
-                            <span th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">U</span>
+                        <!-- Fixed Sidebar User Profile Avatar (with broken-image fallback) -->
+                        <div class="relative w-10 h-10 flex-shrink-0">
+                            <img th:if="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()}"
+                                 th:src="@{'/images/' + ${user.imgUrl}}"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 class="w-10 h-10 rounded-xl object-cover border border-slate-700"
+                                 alt="Profile"/>
+
+                            <div th:style="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()} ? 'display:none;' : 'display:flex;'"
+                                 class="w-10 h-10 rounded-xl bg-indigo-600 text-white items-center justify-center font-bold text-sm uppercase shadow-sm">
+                                <span th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">U</span>
+                            </div>
                         </div>
 
                         <div class="text-left overflow-hidden">
@@ -124,10 +133,18 @@
                     <div class="relative">
                         <button id="profile-dropdown-btn" class="flex items-center gap-2 text-slate-700 focus:outline-none hover:opacity-90 transition">
 
-                            <!-- Topbar Name First-Letter Avatar -->
-                            <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-xs uppercase shadow-sm flex-shrink-0"
-                                 th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">
-                                U
+                            <!-- User Profile Avatar Wrapper (with broken-image fallback) -->
+                            <div class="relative w-8 h-8">
+                                <img th:if="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()}"
+                                     th:src="@{'/images/' + ${user.imgUrl}}"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                     class="w-8 h-8 rounded-full object-cover"
+                                     alt="Avatar"/>
+
+                                <div th:style="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()} ? 'display:none;' : 'display:flex;'"
+                                     class="w-8 h-8 rounded-full bg-indigo-600 text-white items-center justify-center font-bold">
+                                    <span th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">U</span>
+                                </div>
                             </div>
 
                             <span class="text-xs font-bold hidden md:inline" th:text="${user != null ? user.name : 'User'}">
@@ -228,10 +245,21 @@
                                 <tr th:each="c : ${contacts}" class="hover:bg-slate-50/50 transition">
                                     <td class="px-6 py-4 flex items-center gap-3">
                                         
-                                        <!-- Contact First-Letter Avatar -->
-                                        <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs uppercase shadow-sm flex-shrink-0"
-                                             th:text="${c.name != null and #strings.length(c.name) > 0 ? #strings.substring(c.name, 0, 1) : 'C'}">
-                                            C
+                                        <!-- Contact Image with Auto-Fallback -->
+                                        <div class="relative w-9 h-9 flex-shrink-0">
+                                            <!-- Actual Image Load Attempt -->
+                                            <img th:if="${c.img != null and c.img != '' and c.img != 'contact.png' and c.img != 'default.png'}" 
+                                                 th:src="@{'/images/' + ${c.img}}" 
+                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                                 class="w-9 h-9 rounded-full object-cover border border-slate-200" 
+                                                 alt="Contact Profile">
+                                            
+                                            <!-- Dynamic Letter Avatar (Show automatically if image is missing/broken) -->
+                                            <div th:style="${c.img != null and c.img != '' and c.img != 'contact.png' and c.img != 'default.png'} ? 'display:none;' : 'display:flex;'" 
+                                                 class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold items-center justify-center text-xs uppercase shadow-sm"
+                                                 th:text="${c.name != null and #strings.length(c.name) > 0 ? #strings.substring(c.name, 0, 1) : 'C'}">
+                                                C
+                                            </div>
                                         </div>
 
                                         <div>
