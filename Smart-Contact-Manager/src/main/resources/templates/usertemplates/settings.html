@@ -83,13 +83,21 @@
             <div class="p-4 border-t border-slate-800 bg-slate-950/40">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 overflow-hidden">
-                        <!-- Sidebar Bottom DP with Name First Letter Fallback -->
-                        <img th:if="${user != null}" 
-                             th:src="${user.imgUrl != null && !user.imgUrl.isEmpty()} ? @{'/images/' + ${user.imgUrl}} : 'https://ui-avatars.com/api/?name=' + ${#strings.substring(user.name,0,1)} + '&background=6366f1&color=fff&bold=true'" 
-                             class="rounded-xl bg-indigo-100 border border-slate-700" 
-                             style="width: 40px !important; height: 40px !important; object-fit: cover !important;"
-                             th:attr="onerror='this.onerror=null;this.src=\'https://ui-avatars.com/api/?name=' + ${user != null && user.name != null ? #strings.substring(user.name,0,1) : 'U'} + '&background=6366f1&color=fff&bold=true\';'" 
-                             alt="Profile">
+                        <!-- Sidebar Profile Avatar with letter-avatar fallback -->
+                        <div class="relative flex-shrink-0" style="width: 40px; height: 40px;">
+                            <img th:if="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()}"
+                                 th:src="@{'/images/' + ${user.imgUrl}}"
+                                 class="rounded-xl bg-indigo-100 border border-slate-700"
+                                 style="width: 40px !important; height: 40px !important; object-fit: cover !important; display: block;"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 alt="Profile">
+
+                            <div th:style="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()} ? 'display:none;' : 'display:flex;'"
+                                 class="absolute inset-0 rounded-xl bg-indigo-600 text-white items-center justify-center font-bold text-sm uppercase shadow-sm"
+                                 style="width: 40px !important; height: 40px !important;">
+                                <span th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">U</span>
+                            </div>
+                        </div>
                         <div class="text-left overflow-hidden">
                             <h5 class="text-sm font-bold text-white truncate" th:text="${user != null ? user.name : 'Guest User'}">John Doe</h5>
                             <p class="text-xs text-slate-500 truncate" th:text="${user != null ? user.email : 'user@example.com'}">user@example.com</p>
@@ -116,14 +124,21 @@
 
                 <div class="flex items-center gap-4">
                     <div class="relative">
-                        <!-- Header Top Right Corner DP with Name First Letter Fallback -->
                         <button id="profile-dropdown-btn" class="flex items-center gap-2 text-slate-700 focus:outline-none hover:opacity-90 transition">
-                            <img th:if="${user != null}" 
-                                 th:src="${user.imgUrl != null && !user.imgUrl.isEmpty()} ? @{'/images/' + ${user.imgUrl}} : 'https://ui-avatars.com/api/?name=' + ${#strings.substring(user.name,0,1)} + '&background=6366f1&color=fff&bold=true'" 
-                                 class="rounded-lg bg-slate-200" 
-                                 style="width: 32px !important; height: 32px !important; object-fit: cover !important;"
-                                 th:attr="onerror='this.onerror=null;this.src=\'https://ui-avatars.com/api/?name=' + ${user != null && user.name != null ? #strings.substring(user.name,0,1) : 'U'} + '&background=6366f1&color=fff&bold=true\';'" 
-                                 alt="Avatar">
+                            <!-- Navbar Profile Avatar with letter-avatar fallback -->
+                            <div class="relative" style="width: 32px; height: 32px;">
+                                <img th:if="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()}"
+                                     th:src="@{'/images/' + ${user.imgUrl}}"
+                                     class="rounded-lg bg-slate-200"
+                                     style="width: 32px !important; height: 32px !important; object-fit: cover !important; display: block;"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                     alt="Avatar">
+
+                                <div th:style="${user != null and user.imgUrl != null and !user.imgUrl.isBlank()} ? 'display:none;' : 'display:flex;'"
+                                     class="absolute inset-0 rounded-lg bg-indigo-600 text-white items-center justify-center font-bold text-xs uppercase">
+                                    <span th:text="${user != null and user.name != null and #strings.length(user.name) > 0 ? #strings.substring(user.name, 0, 1) : 'U'}">U</span>
+                                </div>
+                            </div>
                             <span class="text-xs font-bold hidden md:inline" th:text="${user != null ? user.name : 'User'}">User</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 hidden md:inline"></i>
                         </button>
