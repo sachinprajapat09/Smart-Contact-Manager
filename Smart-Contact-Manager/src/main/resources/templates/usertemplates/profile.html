@@ -84,17 +84,22 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 overflow-hidden">
                         <img th:if="${user != null}" 
-                             th:src="${user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
-                             class="rounded-xl bg-indigo-100 border border-slate-700" 
+                             th:src="${user.imgUrl != null && !user.imgUrl.isEmpty()} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             class="rounded-xl bg-indigo-100 border border-slate-700 flex-shrink-0" 
                              style="width: 40px !important; height: 40px !important; object-fit: cover !important;"
                              onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                             alt="Profile">
+                        <img th:unless="${user != null}" 
+                             src="https://placehold.co/100x100/6366f1/ffffff?text=U" 
+                             class="rounded-xl bg-indigo-100 border border-slate-700 flex-shrink-0" 
+                             style="width: 40px !important; height: 40px !important; object-fit: cover !important;"
                              alt="Profile">
                         <div class="text-left overflow-hidden">
                             <h5 class="text-sm font-bold text-white truncate" th:text="${user != null ? user.name : 'Guest User'}">John Doe</h5>
                             <p class="text-xs text-slate-500 truncate" th:text="${user != null ? user.email : 'user@example.com'}">user@example.com</p>
                         </div>
                     </div>
-                    <a th:href="@{/logout}" class="p-2 text-slate-500 hover:text-rose-400 rounded-lg transition hover:bg-slate-800" title="Sign Out">
+                    <a th:href="@{/logout}" class="p-2 text-slate-500 hover:text-rose-400 rounded-lg transition hover:bg-slate-800 flex-shrink-0" title="Sign Out">
                         <i class="fa-solid fa-right-from-bracket text-base"></i>
                     </a>
                 </div>
@@ -117,10 +122,15 @@
                     <div class="relative">
                         <button id="profile-dropdown-btn" class="flex items-center gap-2 text-slate-700 focus:outline-none hover:opacity-90 transition">
                             <img th:if="${user != null}" 
-                                 th:src="${user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 th:src="${user.imgUrl != null && !user.imgUrl.isEmpty()} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/100x100/6366f1/ffffff?text=U'" 
                                  class="rounded-lg bg-slate-200" 
                                  style="width: 32px !important; height: 32px !important; object-fit: cover !important;"
                                  onerror="this.src='https://placehold.co/100x100/6366f1/ffffff?text=U'" 
+                                 alt="Avatar">
+                            <img th:unless="${user != null}" 
+                                 src="https://placehold.co/100x100/6366f1/ffffff?text=U" 
+                                 class="rounded-lg bg-slate-200" 
+                                 style="width: 32px !important; height: 32px !important; object-fit: cover !important;"
                                  alt="Avatar">
                             <span class="text-xs font-bold hidden md:inline" th:text="${user != null ? user.name : 'User'}">User</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 hidden md:inline"></i>
@@ -139,6 +149,24 @@
             <!-- PROFILE MAIN CONTENT -->
             <main class="flex-grow p-4 sm:p-6 lg:p-8 space-y-6">
                 
+                <!-- Toast status alerts (Added for session notifications) -->
+                <div id="session-toast" th:if="${session.message}" 
+                     th:classappend="${session.message.type == 'success'} ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'"
+                     class="max-w-4xl mx-auto border px-4 py-3.5 rounded-2xl flex items-start gap-3 text-sm font-medium transition duration-300">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-lg flex-shrink-0"
+                         th:classappend="${session.message.type == 'success'} ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'">
+                        <i th:class="${session.message.type == 'success'} ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation'"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm" th:text="${session.message.type == 'success' ? 'Successful' : 'Alert'}">Status</h4>
+                        <p class="text-xs mt-0.5" th:text="${session.message.content}">Flash message dynamic text.</p>
+                    </div>
+                    <button onclick="dismissSessionToast()" class="ml-auto text-slate-400 hover:text-slate-600 mt-0.5">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <th:block th:text="${#session.removeAttribute('message')}"></th:block>
+                </div>
+
                 <div class="max-w-4xl mx-auto space-y-6">
                     
                     <!-- Top Profile Banner Card -->
@@ -158,8 +186,8 @@
                                 
                                 <!-- User Avatar & Name -->
                                 <div class="flex flex-col sm:flex-row items-center sm:items-end gap-4 text-center sm:text-left">
-                                    <div class="relative">
-                                        <img th:src="${user != null && user.imgUrl != null} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/150x150/6366f1/ffffff?text=U'" 
+                                    <div class="relative flex-shrink-0">
+                                        <img th:src="${user != null && user.imgUrl != null && !user.imgUrl.isEmpty()} ? @{'/images/' + ${user.imgUrl}} : 'https://placehold.co/150x150/6366f1/ffffff?text=U'" 
                                              class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover border-4 border-white shadow-xl bg-slate-100" 
                                              onerror="this.src='https://placehold.co/150x150/6366f1/ffffff?text=U'" 
                                              alt="User Avatar">
@@ -174,7 +202,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Action Buttons (Updated to Edit Profile) -->
+                                <!-- Action Buttons -->
                                 <div class="flex items-center gap-2">
                                     <a th:href="@{/user/edit-profile}" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 flex items-center gap-2">
                                         <i class="fa-solid fa-pen-to-square"></i> Edit Profile
@@ -198,17 +226,14 @@
                                     <span class="text-[11px] font-bold uppercase text-slate-400 block">User ID</span>
                                     <p class="text-sm font-semibold text-slate-800" th:text="${user != null ? '#USER-' + user.id : '#USER-1'}">#USER-1</p>
                                 </div>
-                                <div>
-                                    <!-- <span class="text-[11px] font-bold uppercase text-slate-400 block">Phone Number</span>
-                                    <p class="text-sm font-semibold text-slate-800" th:text="${user != null && user.phone != null && !user.phone.isEmpty()} ? ${user.phone} : 'Not Provided'">Not Provided</p>
-                                    -->
-                                </div>
+                                
                                 <div>
                                     <span class="text-[11px] font-bold uppercase text-slate-400 block">Account Status</span>
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 mt-1">
                                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
                                     </span>
                                 </div>
+                                
                                 <div>
                                     <span class="text-[11px] font-bold uppercase text-slate-400 block">Role</span>
                                     <p class="text-sm font-semibold text-slate-800" th:text="${user != null ? user.role : 'ROLE_USER'}">ROLE_USER</p>
@@ -222,7 +247,7 @@
                                 <i class="fa-solid fa-address-card text-indigo-600"></i> About Me
                             </h3>
                             
-                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 min-h-[120px]">
                                 <p class="text-sm text-slate-600 leading-relaxed italic" 
                                    th:text="${user != null && user.about != null && !user.about.isEmpty()} ? ${user.about} : 'No description added for this user profile.'">
                                     No description added for this user profile.
@@ -243,6 +268,12 @@
 
     <!-- SCRIPTS -->
     <script>
+        // Dismiss Flash Toast Message
+        function dismissSessionToast() {
+            const toast = document.getElementById('session-toast');
+            if (toast) toast.remove();
+        }
+
         // Profile dropdown menu toggling
         const dropdownBtn = document.getElementById('profile-dropdown-btn');
         const dropdownMenu = document.getElementById('profile-dropdown');
